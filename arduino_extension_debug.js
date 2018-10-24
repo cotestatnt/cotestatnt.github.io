@@ -605,7 +605,7 @@
     ],
     it: [
       ['h', 'quando Arduino è connesso', 'whenConnected'],
-      [' ', 'connetti il %m.hwOut al pin %n', 'connectHW', 'led A', 3],
+      [' ', 'connetti il %m.hwOut al pin %n', 'connectHW', 'LED A', 3],
       [' ', 'connetti il %m.hwIn ad analog %n', 'connectHW', 'potenziometro', 0],
       ['-'],
       [' ', '%m.outputs il %m.leds', 'digitalLED', 'led A', 'on'],
