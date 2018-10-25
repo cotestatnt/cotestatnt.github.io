@@ -272,7 +272,7 @@
   function pinMode(pin, mode) {
     var msg = new Uint8Array([PIN_MODE, pin, mode]);
     device.send(msg.buffer);
-    console.log(msg);
+    //console.log('pinMode' + msg);
   }
 
   function analogRead(pin) {
@@ -293,7 +293,7 @@
       return;
     }
     pinMode(pin, INPUT);
-	console.log('digitalRead ' + pin + ': ' +(digitalInputData[pin >> 3] >> (pin & 0x07)) & 0x01);
+	console.log('digitalRead ' + pin );
     return (digitalInputData[pin >> 3] >> (pin & 0x07)) & 0x01;
   }
 
@@ -311,6 +311,7 @@
         val & 0x7F,
         val >> 7]);
     device.send(msg.buffer);
+	console.log('analogWrite ' + msg );
   }
 
   function digitalWrite(pin, val) {
@@ -329,6 +330,7 @@
         digitalOutputData[portNum] & 0x7F,
         digitalOutputData[portNum] >> 0x07]);
     device.send(msg.buffer);
+	console.log('digitalWrite ' + msg );
   }
 
   function rotateServo(pin, deg) {
@@ -342,6 +344,7 @@
         deg & 0x7F,
         deg >> 0x07]);
     device.send(msg.buffer);
+	console.log('rotateServo ' + msg );
   }
 
   ext.whenConnected = function() {
@@ -349,25 +352,27 @@
     return false;
   };
 
-  ext.analogWrite = function(pin, val) {
-    analogWrite(pin, val);
+  
+  ext.digitalRead = function(pin) {
+	console.log('ext digitalRead ' + pin );
+    return digitalRead(pin);
   };
-
+  
   ext.digitalWrite = function(pin, val) {
     if (val == menus[lang]['outputs'][0])
       digitalWrite(pin, HIGH);
     else if (val == menus[lang]['outputs'][1])
-      digitalWrite(pin, LOW);
-    console.log('digitalWrite ' + pin + ': ' + val);
+      digitalWrite(pin, LOW);    
   };
 
-  ext.analogRead = function(pin) {
+  ext.analogRead = function(pin) {	
     return analogRead(pin);
   };
 
-  ext.digitalRead = function(pin) {
-    return digitalRead(pin);
+  ext.analogWrite = function(pin, val) {
+    analogWrite(pin, val);
   };
+
 
   ext.whenAnalogRead = function(pin, op, val) {
     if (pin >= 0 && pin < pinModes[ANALOG].length) {
@@ -392,8 +397,7 @@
   };
 
   ext.connectHW = function(hw, pin) {
-    hwList.add(hw, pin);
-    console.log('connectHW ' + pin + ': ' + val);
+    hwList.add(hw, pin);    
   };
 
   ext.rotateServo = function(servo, deg) {
@@ -433,7 +437,8 @@
   };
 
   ext.digitalLED = function(led, val) {
-    var hw = hwList.search(led);        
+    var hw = hwList.search(led);   
+	console.log('ext.digitalLED ' + hw );	
     if (!hw) return;
     if (val == menus[lang]['outputs'][0]) {
       digitalWrite(hw.pin, HIGH);
@@ -441,20 +446,20 @@
     } else {
       digitalWrite(hw.pin, LOW);
       hw.val = 0;
-    }
-    console.log('digitalLED ' + led + ': ' + val);
+    }    
   };
 
   ext.readInput = function(name) {
     var hw = hwList.search(name);
+	console.log('ext.readInput ' + hw );
     if (!hw) return;
     return analogRead(hw.pin);
   };
 
   ext.whenButton = function(btn, state) {
     var hw = hwList.search(btn);
-    if (!hw) return;
-	console.log('whenButton ' + btn + ': ' + state);
+	console.log('ext.whenButton ' + hw );
+    if (!hw) return;	
     if (state === menus[lang]['btnStates'][0])
       return digitalRead(hw.pin);
     else if (state === menus[lang]['btnStates'][1])
@@ -463,13 +468,14 @@
 
   ext.isButtonPressed = function(btn) {
     var hw = hwList.search(btn);	
-    if (!hw) return;
-	console.log('isButtonPressed ' + btn );
+	console.log('ext.isButtonPressed ' + hw );
+    if (!hw) return;	
     return digitalRead(hw.pin);
   };
 
   ext.whenInput = function(name, op, val) {
     var hw = hwList.search(name);
+	console.log('ext.whenInput ' + hw );
     if (!hw) return;
     if (op == '>')
       return analogRead(hw.pin) > val;
