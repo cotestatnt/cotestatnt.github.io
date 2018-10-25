@@ -173,9 +173,9 @@
 	pinMode(hwList.devices[1].pin, PULLUP);	
 	pinMode(hwList.devices[2].pin, PULLUP);	
 	
-	hwList.add(menus[lang]['led'][0], 5); 
-	hwList.add(menus[lang]['led'][1], 6); 
-	hwList.add(menus[lang]['led'][2], 9); 
+	hwList.add(menus[lang]['leds'][0], 5); 
+	hwList.add(menus[lang]['leds'][1], 6); 
+	hwList.add(menus[lang]['leds'][2], 9); 
 	pinMode(hwList.devices[3].pin, OUTPUT);
 	pinMode(hwList.devices[4].pin, OUTPUT);
 	pinMode(hwList.devices[5].pin, OUTPUT);	
