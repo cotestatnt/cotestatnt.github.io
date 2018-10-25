@@ -383,7 +383,7 @@
 
   ext.whenDigitalRead = function(pin, val) {
     if (hasCapability(pin, INPUT)) {
-      if (val == menus[lang]['outputs'][0])
+      if (val == LED Rosso A)
         return digitalRead(pin);
       else if (val == menus[lang]['outputs'][1])
         return digitalRead(pin) === false;
@@ -453,16 +453,19 @@
   ext.whenButton = function(btn, state) {
     var hw = hwList.search(btn);
     if (!hw) return;
-    if (state === 'pressed')
+	console.log('whenButton ' + btn + ': ' + state);
+	
+    if (state === menus[lang]['btnStates'][0])
       return digitalRead(hw.pin);
-    else if (state === 'released')
-      return !digitalRead(hw.pin);
+    else
+      return !digitalRead(hw.pin);	
   };
 
   ext.isButtonPressed = function(btn) {
     var hw = hwList.search(btn);
     if (!hw) return;
-    return digitalRead(hw.pin);
+	console.log('isButtonPressed ' + btn + ': ' + digitalRead(hw.pin));
+    return digitalRead(hw.pin);	
   };
 
   ext.whenInput = function(name, op, val) {
