@@ -28,6 +28,9 @@
     ANALOG_MAPPING_RESPONSE = 0x6A,
     CAPABILITY_QUERY = 0x6B,
     CAPABILITY_RESPONSE = 0x6C;
+	SERIAL_CONFIG = 0x10;
+	SERIAL_WRITE = 0x20;
+	SERIAL_READ = 0x30;
 
   var INPUT = 0x00,
     OUTPUT = 0x01,
@@ -165,6 +168,68 @@
     device.send(msg.buffer);
   }
   
+  function testSerial() {
+    console.log('Test software serial');
+    var msg = new Uint8Array([
+        START_SYSEX, SERIAL_CONFIG, END_SYSEX]);
+    //device.send(msg.buffer);
+	
+	const Board = require("../");
+	Board.requestPort((error, port) => {
+	  if (error) {
+		console.log(error);
+		return;
+	  }
+
+	  const board = new Board(port.comName);
+
+	  console.log(__filename);
+	  console.log("------------------------------");
+
+	  board.on("open", () => {
+		console.log("  ✔ open");
+	  });
+
+	  board.on("reportversion", () => {
+		console.log("  ✔ reportversion");
+	  });
+
+	  board.on("queryfirmware", () => {
+		console.log("  ✔ queryfirmware");
+	  });
+
+	  board.on("capability-query", () => {
+		console.log("  ✔ capability-query");
+	  });
+
+	  board.on("ready", () => {
+		console.log("  ✔ ready");
+		clearTimeout(timeout);
+
+		const SW_SERIAL0 = board.SERIAL_PORT_IDs.SW_SERIAL0;
+
+		board.serialConfig({
+		  portId: SW_SERIAL0,
+		  baud: 9600,
+		  rxPin: 8,
+		  txPin: 7
+		});
+
+		board.serialWrite(SW_SERIAL0, 'TEST');	  
+		  process.exit();
+		});
+	  });
+
+	  var timeout = setTimeout(() => {
+		console.log(board.currentBuffer);
+		console.log(">>>>>>>>>>>>>>TIMEOUT<<<<<<<<<<<<<<");
+		console.log("------------------------------");
+		process.exit();
+	  }, 10000);
+	});
+
+  }
+  
   function setDigitalInputOutput(){
 	hwList.add(menus[lang]['buttons'][0], 2); 
 	hwList.add(menus[lang]['buttons'][1], 3); 
@@ -206,6 +271,7 @@
         }
         queryAnalogMapping();
 		setDigitalInputOutput();
+		testSerial();
         break;
       case ANALOG_MAPPING_RESPONSE:
         for (var pin = 0; pin < analogChannel.length; pin++)
