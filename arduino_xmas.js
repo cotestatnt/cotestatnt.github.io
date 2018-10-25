@@ -293,8 +293,27 @@
       return;
     }
     pinMode(pin, INPUT);
-	console.log('digitalRead ' + pin );
+	//console.log('digitalRead ' + pin );
     return (digitalInputData[pin >> 3] >> (pin & 0x07)) & 0x01;
+  }
+  
+  function digitalWrite(pin, val) {
+    if (!hasCapability(pin, OUTPUT)) {
+      console.log('ERROR: valid output pins are ' + pinModes[OUTPUT].join(', '));
+      return;
+    }
+    var portNum = (pin >> 3) & 0x0F;
+    if (val == LOW)
+      digitalOutputData[portNum] &= ~(1 << (pin & 0x07));
+    else
+      digitalOutputData[portNum] |= (1 << (pin & 0x07));
+    pinMode(pin, OUTPUT);
+    var msg = new Uint8Array([
+        DIGITAL_MESSAGE | portNum,
+        digitalOutputData[portNum] & 0x7F,
+        digitalOutputData[portNum] >> 0x07]);
+    device.send(msg.buffer);
+	//console.log('digitalWrite ' + msg );
   }
 
   function analogWrite(pin, val) {
@@ -312,25 +331,6 @@
         val >> 7]);
     device.send(msg.buffer);
 	console.log('analogWrite ' + msg );
-  }
-
-  function digitalWrite(pin, val) {
-    if (!hasCapability(pin, OUTPUT)) {
-      console.log('ERROR: valid output pins are ' + pinModes[OUTPUT].join(', '));
-      return;
-    }
-    var portNum = (pin >> 3) & 0x0F;
-    if (val == LOW)
-      digitalOutputData[portNum] &= ~(1 << (pin & 0x07));
-    else
-      digitalOutputData[portNum] |= (1 << (pin & 0x07));
-    pinMode(pin, OUTPUT);
-    var msg = new Uint8Array([
-        DIGITAL_MESSAGE | portNum,
-        digitalOutputData[portNum] & 0x7F,
-        digitalOutputData[portNum] >> 0x07]);
-    device.send(msg.buffer);
-	console.log('digitalWrite ' + msg );
   }
 
   function rotateServo(pin, deg) {
@@ -438,7 +438,7 @@
 
   ext.digitalLED = function(led, val) {
     var hw = hwList.search(led);   
-	console.log('ext.digitalLED ' + hw );	
+	console.log('ext.digitalLED ' + led + ':' + val );	
     if (!hw) return;
     if (val == menus[lang]['outputs'][0]) {
       digitalWrite(hw.pin, HIGH);
