@@ -28,11 +28,8 @@
     ANALOG_MAPPING_RESPONSE = 0x6A,
     CAPABILITY_QUERY = 0x6B,
     CAPABILITY_RESPONSE = 0x6C;
-	SERIAL_CONFIG = 0x10;
-	SERIAL_WRITE = 0x20;
-	SERIAL_READ = 0x30;
-	SW_SERIAL0 = 0x08;
-
+	SERIAL_MESSAGE = 0x60;
+	
   var INPUT = 0x00,
     OUTPUT = 0x01,
     ANALOG = 0x02,
@@ -172,13 +169,9 @@
   function testSerial() {
     console.log('Test software serial');
     var msg = new Uint8Array([
-        START_SYSEX, SERIAL_CONFIG, SW_SERIAL0, 0x00, 0b1001011, 0x00, 0x7, 0x8, END_SYSEX]);    
+        START_SYSEX, SERIAL_MESSAGE, SW_SERIAL0, 0x48, 0x65, 0x6C, 0x6C, 0x6F, END_SYSEX]);    
 	device.send(msg.buffer);
-	console.log(msg);	
-	msg = new Uint8Array([
-        START_SYSEX, SERIAL_WRITE, 0x40, 0x52, 0x00, 0x70, 0x85, END_SYSEX]);    
-	device.send(msg.buffer);
-	console.log(msg);	
+	console.log(msg);		
 }
   
   function setDigitalInputOutput(){
