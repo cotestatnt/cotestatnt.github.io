@@ -385,8 +385,8 @@
 
   
   // CUSTOM external 
-  ext.playSong(song){
-	console.log('Test software serial');
+  ext.playSong = function(song){
+	console.log('Play song');
     var msg = new Uint8Array([
         START_SYSEX, SERIAL_MESSAGE, 0x48, 0x65, 0x6C, 0x6C, 0x6F, song, END_SYSEX]);    
 	device.send(msg.buffer);
