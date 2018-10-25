@@ -359,10 +359,26 @@
   };
   
   ext.digitalWrite = function(pin, val) {
+	console.log('ext digitalWrite ' + pin );
     if (val == menus[lang]['outputs'][0])
       digitalWrite(pin, HIGH);
     else if (val == menus[lang]['outputs'][1])
       digitalWrite(pin, LOW);    
+  };
+  
+  
+  ext.digitalLED = function(led, val) {
+    var hw = hwList.search(led);   
+	console.log('ext.digitalLED ' + hw.pin );	
+	console.log(val);	
+    if (!hw) return;
+    if (val == menus[lang]['outputs'][0]) {
+      digitalWrite(hw.pin, HIGH);
+      hw.val = 255;
+    } else {
+      digitalWrite(hw.pin, LOW);
+      hw.val = 0;
+    }    
   };
 
   ext.analogRead = function(pin) {	
@@ -434,19 +450,6 @@
     else if (b > 100) b = 100;
     analogWrite(hw.pin, b);
     hw.val = b;
-  };
-
-  ext.digitalLED = function(led, val) {
-    var hw = hwList.search(led);   
-	console.log('ext.digitalLED ' + led + ':' + val );	
-    if (!hw) return;
-    if (val == menus[lang]['outputs'][0]) {
-      digitalWrite(hw.pin, HIGH);
-      hw.val = 255;
-    } else {
-      digitalWrite(hw.pin, LOW);
-      hw.val = 0;
-    }    
   };
 
   ext.readInput = function(name) {
