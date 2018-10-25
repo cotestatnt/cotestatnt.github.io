@@ -164,7 +164,24 @@
         START_SYSEX, ANALOG_MAPPING_QUERY, END_SYSEX]);
     device.send(msg.buffer);
   }
-
+  
+  function setDigitalInputOutput(){
+	hwList.add(menus[lang]['buttons'][0], 2); 
+	hwList.add(menus[lang]['buttons'][1], 3); 
+	hwList.add(menus[lang]['buttons'][2], 4); 
+	pinMode(hwList[0].pin, PULLUP);	
+	pinMode(hwList[1].pin, PULLUP);	
+	pinMode(hwList[2].pin, PULLUP);	
+	
+	hwList.add(menus[lang]['led'][0], 5); 
+	hwList.add(menus[lang]['led'][1], 6); 
+	hwList.add(menus[lang]['led'][2], 9); 
+	pinMode(hwList[3].pin, OUTPUT);
+	pinMode(hwList[4].pin, OUTPUT);
+	pinMode(hwList[5].pin, OUTPUT);	
+	console.log("Connected on " + + device.id);  
+	console.log("Digital Input/Output configured");  
+  }
   function setDigitalInputs(portNum, portData) {
     digitalInputData[portNum] = portData;
   }
@@ -189,6 +206,7 @@
           if (i == sysexBytesRead) break;
         }
         queryAnalogMapping();
+		setDigitalInputOutput();
         break;
       case ANALOG_MAPPING_RESPONSE:
         for (var pin = 0; pin < analogChannel.length; pin++)
@@ -350,24 +368,7 @@
 	console.log('rotateServo ' + msg );
   }
 
-  ext.whenConnected = function() {
-	
-	hwList.add(menus[lang]['buttons'][0], 2); 
-	hwList.add(menus[lang]['buttons'][1], 3); 
-	hwList.add(menus[lang]['buttons'][2], 4); 
-	pinMode(hwList[0].pin, PULLUP);	
-	pinMode(hwList[1].pin, PULLUP);	
-	pinMode(hwList[2].pin, PULLUP);	
-	
-	hwList.add(menus[lang]['led'][0], 5); 
-	hwList.add(menus[lang]['led'][1], 6); 
-	hwList.add(menus[lang]['led'][2], 9); 
-	pinMode(hwList[3].pin, OUTPUT);
-	pinMode(hwList[4].pin, OUTPUT);
-	pinMode(hwList[5].pin, OUTPUT);
-	
-	console.log("Connected on " + + device.id);
-	  
+  ext.whenConnected = function() {	 
     if (notifyConnection) return true;
     return false;
   };
