@@ -391,7 +391,7 @@
         START_SYSEX, SERIAL_MESSAGE, 0x48, 0x65, 0x6C, 0x6C, 0x6F, song, END_SYSEX]);    
 	device.send(msg.buffer);
 	console.log(msg);	  
-  }
+  };
   
   ext.digitalRead = function(pin) {
 	console.log('ext digitalRead ' + pin );
