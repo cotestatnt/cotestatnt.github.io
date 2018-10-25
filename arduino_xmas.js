@@ -69,7 +69,7 @@
     minorVersion = 0;
 
   var connected = false;
-  var notifyConnection = false;
+  var notifyConnection = true;
   var device = null;
   var inputData = null;
 
@@ -366,6 +366,7 @@
 	pinMode(hwList[4].pin, OUTPUT);
 	pinMode(hwList[5].pin, OUTPUT);
 	
+	console.log("Connected on " + + device.id);
 	  
     if (notifyConnection) return true;
     return false;
