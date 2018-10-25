@@ -169,7 +169,7 @@
   function testSerial() {
     console.log('Test software serial');
     var msg = new Uint8Array([
-        START_SYSEX, SERIAL_MESSAGE, SW_SERIAL0, 0x48, 0x65, 0x6C, 0x6C, 0x6F, END_SYSEX]);    
+        START_SYSEX, SERIAL_MESSAGE, 0x48, 0x65, 0x6C, 0x6C, 0x6F, END_SYSEX]);    
 	device.send(msg.buffer);
 	console.log(msg);		
 }
