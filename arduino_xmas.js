@@ -296,6 +296,7 @@
     }
   }
 
+   
   function pinMode(pin, mode) {
     var msg = new Uint8Array([PIN_MODE, pin, mode]);
     device.send(msg.buffer);
@@ -382,6 +383,15 @@
     return false;
   };
 
+  
+  // CUSTOM external 
+  ext.playSong(song){
+	console.log('Test software serial');
+    var msg = new Uint8Array([
+        START_SYSEX, SERIAL_MESSAGE, 0x48, 0x65, 0x6C, 0x6C, 0x6F, song, END_SYSEX]);    
+	device.send(msg.buffer);
+	console.log(msg);	  
+  }
   
   ext.digitalRead = function(pin) {
 	console.log('ext digitalRead ' + pin );
@@ -487,7 +497,7 @@
     analogWrite(hw.pin, b);
     hw.val = b;
   };
-
+  
   ext.readInput = function(name) {
     var hw = hwList.search(name);
 	console.log('ext.readInput ' + hw );
@@ -628,6 +638,7 @@
       //[' ', 'Imposta %m.leds a %m.outputs', 'digitalLED', 'LED Rosso 1', 'acceso'],
       [' ', 'Imposta %m.leds a %n%', 'setLED', 'LED Rosso1', 100],
       [' ', 'Aumenta %m.leds di %n%', 'changeLED', 'LED Rosso1', 10],
+	  [' ', 'Suona canzone %n%', 'playSong', '1', 1],
       ['-'],
       [' ', 'Ruota %m.servos fino a %n gradi', 'rotateServo', 'Servo1', 180],
       [' ', 'Ruota %m.servos di %n gradi', 'changeServo', 'Servo1', 20],
