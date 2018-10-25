@@ -582,8 +582,8 @@
   var blocks = {
     en: [
       ['h', 'when device is connected', 'whenConnected'],	  
-      [' ', 'connect %m.hwOut to pin %n', 'connectHW', 'led A', 3],
-      [' ', 'connect %m.hwIn to analog %n', 'connectHW', 'rotation knob', 0],
+      //[' ', 'connect %m.hwOut to pin %n', 'connectHW', 'led A', 3],
+      //[' ', 'connect %m.hwIn to analog %n', 'connectHW', 'rotation knob', 0],
       ['-'],
       [' ', 'set %m.leds %m.outputs', 'digitalLED', 'led A', 'on'],
       [' ', 'set %m.leds brightness to %n%', 'setLED', 'led A', 100],
@@ -597,7 +597,8 @@
       ['-'],
       ['h', 'when %m.hwIn %m.ops %n%', 'whenInput', 'rotation knob', '>', 50],
       ['r', 'read %m.hwIn', 'readInput', 'rotation knob'],
-      ['-'],
+      ['-']
+	  /*
       [' ', 'set pin %n %m.outputs', 'digitalWrite', 1, 'on'],
       [' ', 'set pin %n to %n%', 'analogWrite', 3, 100],
       ['-'],
@@ -608,11 +609,12 @@
       ['r', 'read analog %n', 'analogRead', 0],
       ['-'],
       ['r', 'map %n from %n %n to %n %n', 'mapValues', 50, 0, 100, -240, 240]
+	  */
     ],
     it: [
       ['h', 'Quando Arduino è connesso', 'whenConnected'],	  
-      [' ', 'Connetti il %m.hwOut al pin %n', 'connectHW', 'LED Rosso A', 3],
-      [' ', 'Connetti il %m.hwIn ad analog %n', 'connectHW', 'Potenziometro', 0],
+      //[' ', 'Connetti il %m.hwOut al pin %n', 'connectHW', 'LED Rosso A', 3],
+      //[' ', 'Connetti il %m.hwIn ad analog %n', 'connectHW', 'Potenziometro', 0],
       ['-'],
       [' ', 'Imposta %m.leds a %m.outputs', 'digitalLED', 'LED Rosso A', 'acceso'],
       [' ', 'Porta luminosità di %m.leds a %n%', 'setLED', 'LED Rosso A', 100],
@@ -621,22 +623,24 @@
       [' ', 'Ruota %m.servos fino a %n gradi', 'rotateServo', 'Servo A', 180],
       [' ', 'Ruota %m.servos di %n gradi', 'changeServo', 'Servo A', 20],
       ['-'],
-      ['h', 'Quando tasto %m.buttons è %m.btnStates', 'whenButton', 'Pulsante A', 'premuto'],
+      ['h', 'Quando %m.buttons è %m.btnStates', 'whenButton', 'Pulsante A', 'premuto'],
       ['b', '%m.buttons premuto?', 'isButtonPressed', 'Pulsante A'],
       ['-'],
       ['h', 'Quando %m.hwIn %m.ops %n%', 'whenInput', 'Potenziometro', '>', 50],
       ['r', 'Leggi %m.hwIn', 'readInput', 'Potenziometro'],
-      ['-'],
+      ['-']
+	   /*
       [' ', 'Imposta pin %n a %m.outputs', 'digitalWrite', 1, 'acceso'],
       [' ', 'Porta pin %n al %n%', 'analogWrite', 3, 100],
       ['-'],
       ['h', 'Quando pin %n è %m.outputs', 'whenDigitalRead', 1, 'acceso'],
       ['b', 'pin %n acceso?', 'digitalRead', 1],
       ['-'],
-      ['h', 'Quando analog %n %m.ops %n%', 'whenAnalogRead', 1, '>', 50],
-      ['r', 'leggi analog %n', 'analogRead', 0],
+      ['h', 'Quando segnale %n %m.ops %n%', 'whenAnalogRead', 1, '>', 50],
+      ['r', 'Leggi segnale %n', 'analogRead', 0],
       ['-'],
       ['r', 'Porta %n da %n %n a %n %n', 'mapValues', 50, 0, 100, -240, 240]
+	  */
     ]
   };
 
