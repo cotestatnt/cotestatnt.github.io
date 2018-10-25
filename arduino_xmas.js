@@ -434,16 +434,14 @@
   ext.digitalLED = function(led, val) {
     var hw = hwList.search(led);        
     if (!hw) return;
-    if (val == 'acceso') {
+    if (val == menus[lang]['outputs'][0]) {
       digitalWrite(hw.pin, HIGH);
       hw.val = 255;
-      console.log('LED ON');
     } else {
       digitalWrite(hw.pin, LOW);
       hw.val = 0;
-      console.log('LED OFF');
     }
-    console.log('digitaLED ' + led + ': ' + val);
+    console.log('digitalLED ' + led + ': ' + val);
   };
 
   ext.readInput = function(name) {
