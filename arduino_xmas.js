@@ -169,16 +169,16 @@
 	hwList.add(menus[lang]['buttons'][0], 2); 
 	hwList.add(menus[lang]['buttons'][1], 3); 
 	hwList.add(menus[lang]['buttons'][2], 4); 
-	pinMode(hwList[0].pin, PULLUP);	
-	pinMode(hwList[1].pin, PULLUP);	
-	pinMode(hwList[2].pin, PULLUP);	
+	pinMode(hwList.devices[0].pin, PULLUP);	
+	pinMode(hwList.devices[1].pin, PULLUP);	
+	pinMode(hwList.devices[2].pin, PULLUP);	
 	
 	hwList.add(menus[lang]['led'][0], 5); 
 	hwList.add(menus[lang]['led'][1], 6); 
 	hwList.add(menus[lang]['led'][2], 9); 
-	pinMode(hwList[3].pin, OUTPUT);
-	pinMode(hwList[4].pin, OUTPUT);
-	pinMode(hwList[5].pin, OUTPUT);	
+	pinMode(hwList.devices[3].pin, OUTPUT);
+	pinMode(hwList.devices[4].pin, OUTPUT);
+	pinMode(hwList.devices[5].pin, OUTPUT);	
 	console.log("Connected on " + + device.id);  
 	console.log("Digital Input/Output configured");  
   }
