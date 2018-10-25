@@ -293,6 +293,7 @@
       return;
     }
     pinMode(pin, INPUT);
+	console.log('digitalRead ' + pin + ': ' +(digitalInputData[pin >> 3] >> (pin & 0x07)) & 0x01);
     return (digitalInputData[pin >> 3] >> (pin & 0x07)) & 0x01;
   }
 
@@ -461,8 +462,9 @@
   };
 
   ext.isButtonPressed = function(btn) {
-    var hw = hwList.search(btn);
+    var hw = hwList.search(btn);	
     if (!hw) return;
+	console.log('isButtonPressed ' + btn );
     return digitalRead(hw.pin);
   };
 
