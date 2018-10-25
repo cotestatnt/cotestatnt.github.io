@@ -292,7 +292,8 @@
       console.log('ERROR: valid input pins are ' + pinModes[INPUT].join(', '));
       return;
     }
-    pinMode(pin, INPUT);
+	
+    //pinMode(pin, INPUT);
 	var val =  (digitalInputData[pin >> 3] >> (pin & 0x07)) & 0x01;
 	console.log('digitalRead ' + pin + ' : ' + val);
     return val;
@@ -308,7 +309,8 @@
       digitalOutputData[portNum] &= ~(1 << (pin & 0x07));
     else
       digitalOutputData[portNum] |= (1 << (pin & 0x07));
-    pinMode(pin, OUTPUT);
+    
+	//pinMode(pin, OUTPUT);
     var msg = new Uint8Array([
         DIGITAL_MESSAGE | portNum,
         digitalOutputData[portNum] & 0x7F,
@@ -349,6 +351,22 @@
   }
 
   ext.whenConnected = function() {
+	
+	hwList.add(menus[lang]['buttons'][0], 2); 
+	hwList.add(menus[lang]['buttons'][1], 3); 
+	hwList.add(menus[lang]['buttons'][2], 4); 
+	pinMode(hwList[0].pin, PULLUP);	
+	pinMode(hwList[1].pin, PULLUP);	
+	pinMode(hwList[2].pin, PULLUP);	
+	
+	hwList.add(menus[lang]['led'][0], 5); 
+	hwList.add(menus[lang]['led'][1], 6); 
+	hwList.add(menus[lang]['led'][2], 9); 
+	pinMode(hwList[3].pin, OUTPUT);
+	pinMode(hwList[4].pin, OUTPUT);
+	pinMode(hwList[5].pin, OUTPUT);
+	
+	  
     if (notifyConnection) return true;
     return false;
   };
@@ -561,7 +579,7 @@
 
   var blocks = {
     en: [
-      ['h', 'when device is connected', 'whenConnected'],
+      ['h', 'when device is connected', 'whenConnected'],	  
       [' ', 'connect %m.hwOut to pin %n', 'connectHW', 'led A', 3],
       [' ', 'connect %m.hwIn to analog %n', 'connectHW', 'rotation knob', 0],
       ['-'],
@@ -590,7 +608,7 @@
       ['r', 'map %n from %n %n to %n %n', 'mapValues', 50, 0, 100, -240, 240]
     ],
     it: [
-      ['h', 'Quando Arduino è connesso', 'whenConnected'],
+      ['h', 'Quando Arduino è connesso', 'whenConnected'],	  
       [' ', 'Connetti il %m.hwOut al pin %n', 'connectHW', 'LED Rosso A', 3],
       [' ', 'Connetti il %m.hwIn ad analog %n', 'connectHW', 'Potenziometro', 0],
       ['-'],
