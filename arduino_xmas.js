@@ -31,6 +31,7 @@
 	SERIAL_CONFIG = 0x10;
 	SERIAL_WRITE = 0x20;
 	SERIAL_READ = 0x30;
+	SW_SERIAL0 = 0x08;
 
   var INPUT = 0x00,
     OUTPUT = 0x01,
@@ -171,53 +172,10 @@
   function testSerial() {
     console.log('Test software serial');
     var msg = new Uint8Array([
-        START_SYSEX, SERIAL_CONFIG, END_SYSEX]);
-    //device.send(msg.buffer);
+        START_SYSEX, SERIAL_CONFIG, SW_SERIAL0, 0x00, 0b1001011, 0x00, END_SYSEX]);    
+	device.send(msg.buffer);
+	console.log(msg);
 	
-	const Board = require("../");
-	Board.requestPort((error, port) => {
-	  if (error) {
-		console.log(error);
-		return;
-	  }
-
-	  const board = new Board(port.comName);
-
-	  console.log(__filename);
-	  console.log("------------------------------");
-
-	  board.on("open", () => {
-		console.log("  ✔ open");
-	  });
-
-	  board.on("reportversion", () => {
-		console.log("  ✔ reportversion");
-	  });
-
-	  board.on("queryfirmware", () => {
-		console.log("  ✔ queryfirmware");
-	  });
-
-	  board.on("capability-query", () => {
-		console.log("  ✔ capability-query");
-	  });
-
-	  board.on("ready", () => {
-		console.log("  ✔ ready");
-		const SW_SERIAL0 = board.SERIAL_PORT_IDs.SW_SERIAL0;
-
-		board.serialConfig({
-		  portId: SW_SERIAL0,
-		  baud: 9600,
-		  rxPin: 8,
-		  txPin: 7
-		});
-
-		board.serialWrite(SW_SERIAL0, 'TEST');	  
-		process.exit();
-	});
-
-  }
 }
   
   function setDigitalInputOutput(){
