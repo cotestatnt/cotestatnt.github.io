@@ -174,8 +174,7 @@
     var msg = new Uint8Array([
         START_SYSEX, SERIAL_CONFIG, SW_SERIAL0, 0x00, 0b1001011, 0x00, END_SYSEX]);    
 	device.send(msg.buffer);
-	console.log(msg);
-	
+	console.log(msg);	
 }
   
   function setDigitalInputOutput(){
