@@ -616,11 +616,11 @@
       //[' ', 'Connetti il %m.hwIn ad analog %n', 'connectHW', 'Potenziometro', 0],
       ['-'],
       //[' ', 'Imposta %m.leds a %m.outputs', 'digitalLED', 'LED Rosso 1', 'acceso'],
-      [' ', 'Imposta %m.leds a %n%', 'setLED', 'LED Rosso 1', 100],
-      [' ', 'Aumento %m.leds a %n%', 'changeLED', 'LED Rosso 1', 20],
+      [' ', 'Imposta %m.leds a %n%', 'setLED', 'LED Rosso1', 100],
+      [' ', 'Aumenta %m.leds di %n%', 'changeLED', 'LED Rosso1', 10],
       ['-'],
-      [' ', 'Ruota %m.servos fino a %n gradi', 'rotateServo', 'Servo 1', 180],
-      [' ', 'Ruota %m.servos di %n gradi', 'changeServo', 'Servo 1', 20],
+      [' ', 'Ruota %m.servos fino a %n gradi', 'rotateServo', 'Servo1', 180],
+      [' ', 'Ruota %m.servos di %n gradi', 'changeServo', 'Servo1', 20],
       ['-'],
       ['h', 'Quando %m.buttons è %m.btnStates', 'whenButton', 'Pulsante A', 'premuto'],
       ['b', '%m.buttons premuto?', 'isButtonPressed', 'Pulsante A'],
@@ -659,11 +659,11 @@
       buttons: ['Pulsante A', 'Pulsante B', 'Pulsante C', 'Pulsante D' ],
       btnStates: ['premuto', 'rilasciato'],
       hwIn: ['Potenziometro', 'Sensore di luce', 'Sensore di temperatura'],
-      hwOut: ['LED Rosso 1', 'LED Verde 1', 'LED Blu 1', 'LED Rosso 2', 'LED Verde 2', 'LED Blu 2', 'Pulsante A', 'Pulsante B', 'Pulsante C', 'Pulsante D', 'Servo 1', 'Servo 2'],
-      leds: ['LED Rosso 1', 'LED Verde 1', 'LED Blu 1', 'LED Rosso 2', 'LED Verde 2', 'LED Blu 2'],
+      hwOut: ['LED Rosso1', 'LED Verde1', 'LED Blu1', 'LED Rosso2', 'LED Verde2', 'LED Blu2', 'Pulsante A', 'Pulsante B', 'Pulsante C', 'Pulsante D', 'Servo1', 'Servo2'],
+      leds: ['LED Rosso1', 'LED Verde1', 'LED Blu1', 'LED Rosso2', 'LED Verde2', 'LED Blu2'],
       outputs: ['acceso', 'spento'],
       ops: ['>', '=', '<'],
-      servos: ['Servo 1', 'Servo 2']
+      servos: ['Servo1', 'Servo2']
     }
   };
 
