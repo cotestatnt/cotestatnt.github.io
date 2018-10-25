@@ -176,10 +176,9 @@
 	hwList.add(menus[lang]['leds'][0], 5); 
 	hwList.add(menus[lang]['leds'][1], 6); 
 	hwList.add(menus[lang]['leds'][2], 9); 
-	pinMode(hwList.devices[3].pin, OUTPUT);
-	pinMode(hwList.devices[4].pin, OUTPUT);
-	pinMode(hwList.devices[5].pin, OUTPUT);	
-	console.log("Connected on " + + device.id);  
+	pinMode(hwList.devices[3].pin, PWM);
+	pinMode(hwList.devices[4].pin, PWM);
+	pinMode(hwList.devices[5].pin, PWM);	
 	console.log("Digital Input/Output configured");  
   }
   function setDigitalInputs(portNum, portData) {
@@ -616,12 +615,12 @@
       //[' ', 'Connetti il %m.hwOut al pin %n', 'connectHW', 'LED Rosso A', 3],
       //[' ', 'Connetti il %m.hwIn ad analog %n', 'connectHW', 'Potenziometro', 0],
       ['-'],
-      [' ', 'Imposta %m.leds a %m.outputs', 'digitalLED', 'LED Rosso A', 'acceso'],
-      [' ', 'Porta luminosità di %m.leds a %n%', 'setLED', 'LED Rosso A', 100],
-      [' ', 'Cambia luminosità di %m.leds a %n%', 'changeLED', 'LED Rosso A', 20],
+      //[' ', 'Imposta %m.leds a %m.outputs', 'digitalLED', 'LED Rosso 1', 'acceso'],
+      [' ', 'Imposta %m.leds a %n%', 'setLED', 'LED Rosso 1', 100],
+      [' ', 'Aumento %m.leds a %n%', 'changeLED', 'LED Rosso 1', 20],
       ['-'],
-      [' ', 'Ruota %m.servos fino a %n gradi', 'rotateServo', 'Servo A', 180],
-      [' ', 'Ruota %m.servos di %n gradi', 'changeServo', 'Servo A', 20],
+      [' ', 'Ruota %m.servos fino a %n gradi', 'rotateServo', 'Servo 1', 180],
+      [' ', 'Ruota %m.servos di %n gradi', 'changeServo', 'Servo 1', 20],
       ['-'],
       ['h', 'Quando %m.buttons è %m.btnStates', 'whenButton', 'Pulsante A', 'premuto'],
       ['b', '%m.buttons premuto?', 'isButtonPressed', 'Pulsante A'],
@@ -649,22 +648,22 @@
       buttons: ['button A', 'button B', 'button C', 'button D'],
       btnStates: ['pressed', 'released'],
       hwIn: ['rotation knob', 'light sensor', 'temperature sensor'],
-      hwOut: ['led A', 'led B', 'led C', 'led D', 'led E', 'button A', 'button B', 'button C', 'button D', 'servo A', 'servo B', 'servo C', 'servo D'],
-      leds: ['led A', 'led B', 'led C', 'led D','led E'],
+      hwOut: ['red led 1', 'green led 1', 'blue led 1', 'red led 2', 'green led 2', 'blue led 2', 'button A', 'button B', 'button C', 'button D', 'servo 2', 'servo 2'],
+      leds: ['red led 1', 'green led 1', 'blue led 1', 'red led 2', 'green led 2', 'blue led 2'],
       outputs: ['on', 'off'],
       ops: ['>', '=', '<'],
-      servos: ['servo A', 'servo B', 'servo C', 'servo D']
+      servos: ['servo 1', 'servo 2']
     },
     
     it: {
       buttons: ['Pulsante A', 'Pulsante B', 'Pulsante C', 'Pulsante D' ],
       btnStates: ['premuto', 'rilasciato'],
       hwIn: ['Potenziometro', 'Sensore di luce', 'Sensore di temperatura'],
-      hwOut: ['LED Rosso A', 'LED Verde A', 'LED Blu A', 'LED Rosso B', 'LED Verde B', 'LED Blu B', 'Pulsante A', 'Pulsante B', 'Pulsante C', 'Pulsante D', 'Servo A', 'Servo B', 'Servo C', 'Servo D'],
-      leds: ['LED Rosso A', 'LED Verde A', 'LED Blu A', 'LED Rosso B', 'LED Verde B', 'LED Blu B'],
+      hwOut: ['LED Rosso 1', 'LED Verde 1', 'LED Blu 1', 'LED Rosso 2', 'LED Verde 2', 'LED Blu 2', 'Pulsante A', 'Pulsante B', 'Pulsante C', 'Pulsante D', 'Servo 1', 'Servo 2'],
+      leds: ['LED Rosso 1', 'LED Verde 1', 'LED Blu 1', 'LED Rosso 2', 'LED Verde 2', 'LED Blu 2'],
       outputs: ['acceso', 'spento'],
       ops: ['>', '=', '<'],
-      servos: ['Servo A', 'Servo B', 'Servo C', 'Servo D']
+      servos: ['Servo 1', 'Servo 2']
     }
   };
 
