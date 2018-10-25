@@ -175,6 +175,10 @@
         START_SYSEX, SERIAL_CONFIG, SW_SERIAL0, 0x00, 0b1001011, 0x00, 0x7, 0x8, END_SYSEX]);    
 	device.send(msg.buffer);
 	console.log(msg);	
+	msg = new Uint8Array([
+        START_SYSEX, SERIAL_WRITE, 0x40, 0x52, 0x00, 0x70, 0x85, END_SYSEX]);    
+	device.send(msg.buffer);
+	console.log(msg);	
 }
   
   function setDigitalInputOutput(){
