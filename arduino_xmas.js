@@ -638,7 +638,7 @@
       //[' ', 'Imposta %m.leds a %m.outputs', 'digitalLED', 'LED Rosso 1', 'acceso'],
       [' ', 'Imposta %m.leds a %n%', 'setLED', 'LED Rosso1', 100],
       [' ', 'Aumenta %m.leds di %n%', 'changeLED', 'LED Rosso1', 10],
-	  [' ', 'Suona canzone %n%', 'playSong', 1],
+      [' ', 'Suona canzone %n', 'playSong', 1],
       ['-'],
       [' ', 'Ruota %m.servos fino a %n gradi', 'rotateServo', 'Servo1', 180],
       [' ', 'Ruota %m.servos di %n gradi', 'changeServo', 'Servo1', 20],
