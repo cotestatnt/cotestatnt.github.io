@@ -204,8 +204,6 @@
 
 	  board.on("ready", () => {
 		console.log("  ✔ ready");
-		clearTimeout(timeout);
-
 		const SW_SERIAL0 = board.SERIAL_PORT_IDs.SW_SERIAL0;
 
 		board.serialConfig({
@@ -216,19 +214,11 @@
 		});
 
 		board.serialWrite(SW_SERIAL0, 'TEST');	  
-		  process.exit();
-		});
-	  });
-
-	  var timeout = setTimeout(() => {
-		console.log(board.currentBuffer);
-		console.log(">>>>>>>>>>>>>>TIMEOUT<<<<<<<<<<<<<<");
-		console.log("------------------------------");
 		process.exit();
-	  }, 10000);
-	
+	});
 
   }
+}
   
   function setDigitalInputOutput(){
 	hwList.add(menus[lang]['buttons'][0], 2); 
