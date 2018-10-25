@@ -369,8 +369,7 @@
   
   ext.digitalLED = function(led, val) {
     var hw = hwList.search(led);   
-	console.log('ext.digitalLED ' + hw.pin );	
-	console.log(val);	
+	console.log('ext.digitalLED ' + hw.pin +' ' + val );		
     if (!hw) return;
     if (val == menus[lang]['outputs'][0]) {
       digitalWrite(hw.pin, HIGH);
@@ -379,6 +378,15 @@
       digitalWrite(hw.pin, LOW);
       hw.val = 0;
     }    
+  };
+  
+  ext.isButtonPressed = function(btn) {
+    var hw = hwList.search(btn);	
+	console.log('ext.isButtonPressed ');
+	console.log( hw );
+    if (!hw) return;	
+	console.log( digitalRead(hw.pin) );
+    return digitalRead(hw.pin);
   };
 
   ext.analogRead = function(pin) {	
@@ -469,12 +477,6 @@
       return !digitalRead(hw.pin);
   };
 
-  ext.isButtonPressed = function(btn) {
-    var hw = hwList.search(btn);	
-	console.log('ext.isButtonPressed ' + hw );
-    if (!hw) return;	
-    return digitalRead(hw.pin);
-  };
 
   ext.whenInput = function(name, op, val) {
     var hw = hwList.search(name);
