@@ -86,7 +86,7 @@
     this.devices = [];
 
     this.add = function(dev, pin) {
-      var device = this.search(dev);
+      var device = this.search(dev);      
       if (!device) {
         device = {name: dev, pin: pin, val: 0};
         this.devices.push(device);
@@ -272,6 +272,7 @@
   function pinMode(pin, mode) {
     var msg = new Uint8Array([PIN_MODE, pin, mode]);
     device.send(msg.buffer);
+    console.log(msg);
   }
 
   function analogRead(pin) {
@@ -356,6 +357,7 @@
       digitalWrite(pin, HIGH);
     else if (val == menus[lang]['outputs'][1])
       digitalWrite(pin, LOW);
+    console.log('digitalWrite ' + pin + ': ' + val);
   };
 
   ext.analogRead = function(pin) {
@@ -390,6 +392,7 @@
 
   ext.connectHW = function(hw, pin) {
     hwList.add(hw, pin);
+    console.log('connectHW ' + pin + ': ' + val);
   };
 
   ext.rotateServo = function(servo, deg) {
@@ -429,15 +432,18 @@
   };
 
   ext.digitalLED = function(led, val) {
-    var hw = hwList.search(led);
+    var hw = hwList.search(led);        
     if (!hw) return;
-    if (val == 'on') {
+    if (val == 'acceso') {
       digitalWrite(hw.pin, HIGH);
       hw.val = 255;
-    } else if (val == 'off') {
+      console.log('LED ON');
+    } else {
       digitalWrite(hw.pin, LOW);
       hw.val = 0;
+      console.log('LED OFF');
     }
+    console.log('digitaLED ' + led + ': ' + val);
   };
 
   ext.readInput = function(name) {
