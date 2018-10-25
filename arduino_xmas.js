@@ -620,14 +620,14 @@
     },
     
     it: {
-      buttons: ['pulsante A', 'pulsante B', 'pulsante C', 'pulsante D', 'pulsante E' ],
+      buttons: ['Pulsante A', 'Pulsante B', 'Pulsante C', 'Pulsante D' ],
       btnStates: ['premuto', 'rilasciato'],
-      hwIn: ['potenziometro', 'sensore di luce', 'sensore di temperatura'],
-      hwOut: ['led A', 'led B', 'led C', 'led D', 'led E', 'pulsante A', 'pulsante B', 'pulsante C', 'pulsante D', 'pulsante E', 'servo A', 'servo B', 'servo C', 'servo D'],
-      leds: ['led A', 'led B', 'led C', 'led D', 'led E'],
+      hwIn: ['Potenziometro', 'Sensore di luce', 'Sensore di temperatura'],
+      hwOut: ['LED Rosso A', 'LED Verde A', 'LED Blu A', 'LED Rosso B', 'LED Verde B', 'LED Blu B', 'Pulsante A', 'Pulsante B', 'Pulsante C', 'Pulsante D', 'Servo A', 'Servo B', 'Servo C', 'Servo D'],
+      leds: ['LED Rosso A', 'LED Verde A', 'LED Blu A', 'LED Rosso B', 'LED Verde B', 'LED Blu B'],
       outputs: ['acceso', 'spento'],
       ops: ['>', '=', '<'],
-      servos: ['servo A', 'servo B', 'servo C', 'servo D']
+      servos: ['Servo A', 'Servo B', 'Servo C', 'Servo D']
     }
   };
 
