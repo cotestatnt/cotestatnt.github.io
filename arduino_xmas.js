@@ -390,7 +390,7 @@
     return false;
   };
 
-  /*
+  
   
   // CUSTOM external 
   ext.play() = function(){
@@ -408,13 +408,16 @@
 	device.send(msg.buffer);
 	console.log(msg);	  
   };
-  
+ 
+/* 
   function checksum(DFPmsg){
 	DFPmsg.add(0x00);
 	DFPmsg.add(0x00);
 	DFPmsg.add(0xEF);
 	console.log(DFPmsg);
   }
+  
+  */
   
   ext.playSong() = function(song){
 	console.log('Play song ' + song);
@@ -425,7 +428,7 @@
 	//console.log(msg);	  
   };
   
-  */
+  
   
   ext.digitalRead = function(pin) {
 	console.log('ext digitalRead ' + pin );
