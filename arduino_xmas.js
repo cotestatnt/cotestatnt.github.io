@@ -411,21 +411,22 @@
 	console.log(msg);	  
   };
  
-
-  function checksum(DFPmsg){
-	DFPmsg.add(0x00);
-	DFPmsg.add(0x00);
-	DFPmsg.add(0xEF);
-	console.log(DFPmsg);
-  }   
   
   ext.playSong = function(song){
    console.log('Play song ' + song);
-   //var DFPmsg = new Uint8Array([ 0x7E, 0xFF, 0x06, 0x03, 0x03, song, 0x00, 0x00]); //, 0xFF, 0xFF, 0xEF]);
-   
-    var msg = new Uint8Array([START_SYSEX, SERIAL_MESSAGE, 0x03, 0x01, 0x00, 0x00, 0xFE, 0xED, 0xFE, END_SYSEX]);    
-	device.send(msg.buffer);
-	console.log(msg);	  
+   var DFPmsg = new Uint8Array([ 0x7E, 0xFF, 0x06, 0x03, 0x03, song, 0x00, 0x00]); //, 0xFF, 0xFF, 0xEF]); 
+    var sum = 0;
+    var i;
+    for(i=3; i<10; i++){
+    	sum += DPFcmd[i];
+    }
+    sum = -sum;
+    DPFcmd.push(sum >> 8);  
+    DPFcmd.push(sum);
+    DPFcmd.push(END_SYSEX);
+             
+	device.send(DPFcmd.buffer);
+	console.log(DPFcmd);	  
   };    
   
   ext.digitalRead = function(pin) {
