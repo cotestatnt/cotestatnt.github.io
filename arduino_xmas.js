@@ -395,16 +395,18 @@
   // CUSTOM external 
   ext.play = function(){
 	console.log('Play music');
-    var msg = new Uint8Array([
-        START_SYSEX, SERIAL_MESSAGE, 0x0D, 0x01, 0x00, 0x00, 0xFE, 0xED, END_SYSEX]);    
+    var msg = new Uint8Array([START_SYSEX, SERIAL_MESSAGE,
+		                      0x7E, 0xFF, 0x06, 0x0D, 0x01, 0x00, 0x00, 0xFE, 0xED, 0xFE, 
+                              END_SYSEX]);    
 	device.send(msg.buffer);
 	console.log(msg);	  
   };
   
   ext.pause = function(){
 	console.log('Stop music');
-    var msg = new Uint8Array([
-        START_SYSEX, SERIAL_MESSAGE, 0x0E, 0x01, 0x00, 0x00, 0xFE, 0xEC, END_SYSEX]);    
+    var msg = new Uint8Array([START_SYSEX, SERIAL_MESSAGE, 
+                              0x7E, 0xFF, 0x06, 0x0E, 0x01, 0x00, 0x00, 0xFE, 0xEC, 0xFE, 
+                              END_SYSEX]);    
 	device.send(msg.buffer);
 	console.log(msg);	  
   };
@@ -421,7 +423,7 @@
    console.log('Play song ' + song);
    //var DFPmsg = new Uint8Array([ 0x7E, 0xFF, 0x06, 0x03, 0x03, song, 0x00, 0x00]); //, 0xFF, 0xFF, 0xEF]);
    
-    var msg = new Uint8Array([START_SYSEX, SERIAL_MESSAGE, 0x03, 0x01, 0x00, 0x00, 0xFE, 0xED, END_SYSEX]);    
+    var msg = new Uint8Array([START_SYSEX, SERIAL_MESSAGE, 0x03, 0x01, 0x00, 0x00, 0xFE, 0xED, 0xFE, END_SYSEX]);    
 	device.send(msg.buffer);
 	console.log(msg);	  
   };    
