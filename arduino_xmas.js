@@ -670,7 +670,7 @@
       [' ', 'Imposta %m.leds a %n%', 'setLED', 'LED Rosso1', 100],
       [' ', 'Aumenta %m.leds di %n%', 'changeLED', 'LED Rosso1', 10],
 	  ['-'],
-	  [' ', 'Suona canzone %n%', 'playSong', '1', 1],
+	  [' ', 'Suona canzone %n%', 'playSong', 1],
 	  [' ', 'Play', 'play'],
 	  [' ', 'Pause', 'pause'],
       ['-'],
