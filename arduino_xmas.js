@@ -420,12 +420,12 @@
   */
   
   ext.playSong() = function(song){
-	console.log('Play song ' + song);
-	var DFPmsg = new Uint8Array([ 0x7E, 0xFF, 0x06, 0x03, 0x03, song, 0x00, 0x00]); //, 0xFF, 0xFF, 0xEF]);
-    var msg = new Uint8Array([
-        START_SYSEX, SERIAL_MESSAGE, 0x03, 0x01, 0x00, 0x00, 0xFE, 0xED, END_SYSEX]);    
-	//device.send(msg.buffer);
-	//console.log(msg);	  
+   console.log('Play song ' + song);
+   //var DFPmsg = new Uint8Array([ 0x7E, 0xFF, 0x06, 0x03, 0x03, song, 0x00, 0x00]); //, 0xFF, 0xFF, 0xEF]);
+   
+    var msg = new Uint8Array([START_SYSEX, SERIAL_MESSAGE, 0x03, 0x01, 0x00, 0x00, 0xFE, 0xED, END_SYSEX]);    
+	device.send(msg.buffer);
+	console.log(msg);	  
   };    
   
   ext.digitalRead = function(pin) {
