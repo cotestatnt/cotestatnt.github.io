@@ -424,9 +424,9 @@
     	sum += msg[i];
     }
     sum = -sum;
-    msg[8] = sum >> 8;
-    msg[9] = sum;
-	msg[10] = 0xFE;
+    msg[9] = sum >> 8;
+    msg[10] = sum;
+	msg[11] = 0xFE;
              
 	device.send(msg.buffer);
 	console.log(msg);	
