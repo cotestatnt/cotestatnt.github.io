@@ -390,7 +390,7 @@
     return false;
   };
 
-  
+  /*
   
   // CUSTOM external 
   ext.play() = function(){
@@ -409,13 +409,15 @@
 	console.log(msg);	  
   };
  
-/* 
+
   function checksum(DFPmsg){
 	DFPmsg.add(0x00);
 	DFPmsg.add(0x00);
 	DFPmsg.add(0xEF);
 	console.log(DFPmsg);
   }  
+  
+  */
   
   ext.playSong() = function(song){
 	console.log('Play song ' + song);
@@ -424,9 +426,7 @@
         START_SYSEX, SERIAL_MESSAGE, 0x03, 0x01, 0x00, 0x00, 0xFE, 0xED, END_SYSEX]);    
 	//device.send(msg.buffer);
 	//console.log(msg);	  
-  };
-  
-  */
+  };    
   
   ext.digitalRead = function(pin) {
 	console.log('ext digitalRead ' + pin );
@@ -673,10 +673,11 @@
       //[' ', 'Imposta %m.leds a %m.outputs', 'digitalLED', 'LED Rosso 1', 'acceso'],
       [' ', 'Imposta %m.leds a %n%', 'setLED', 'LED Rosso1', 100],
       [' ', 'Aumenta %m.leds di %n%', 'changeLED', 'LED Rosso1', 10],
-	  ['-'],
-	  [' ', 'Suona canzone %n%', 'playSong', 1],
-	  [' ', 'Play', 'play'],
-	  [' ', 'Pause', 'pause'],
+	    
+	  [' ', 'Suona canzone %n', 'playSong', 1],
+	  [' ', 'Avvia la musica', 'play'],
+	  [' ', 'Ferma la musica', 'pause'],
+	    
       ['-'],
       [' ', 'Ruota %m.servos fino a %n gradi', 'rotateServo', 'Servo1', 180],
       [' ', 'Ruota %m.servos di %n gradi', 'changeServo', 'Servo1', 20],
