@@ -29,6 +29,13 @@
     CAPABILITY_QUERY = 0x6B,
     CAPABILITY_RESPONSE = 0x6C;
 	SERIAL_MESSAGE = 0x60;
+	// DFPlayer
+	PLAY_SONG = 0x03;
+	NEXT = 0x01;
+	PREV = 0x02;
+	PLAY = 0x0D;
+	PAUSE = 0x0E;
+	
 	
   var INPUT = 0x00,
     OUTPUT = 0x01,
@@ -385,12 +392,36 @@
 
   
   // CUSTOM external 
-  ext.playSong = function(song){
-	console.log('Play song');
+  ext.play() = function(){
+	console.log('Play music');
     var msg = new Uint8Array([
-        START_SYSEX, SERIAL_MESSAGE, 0x48, 0x65, 0x6C, 0x6C, 0x6F, song, END_SYSEX]);    
+        START_SYSEX, SERIAL_MESSAGE, 0x0D, 0x01, 0x00, 0x00, 0xFE, 0xED, END_SYSEX]);    
 	device.send(msg.buffer);
 	console.log(msg);	  
+  };
+  
+  ext.pause() = function(){
+	console.log('Stop music');
+    var msg = new Uint8Array([
+        START_SYSEX, SERIAL_MESSAGE, 0x0E, 0x01, 0x00, 0x00, 0xFE, 0xEC, END_SYSEX]);    
+	device.send(msg.buffer);
+	console.log(msg);	  
+  };
+  
+  function checksum(DFPmsg){
+	DFPmsg.add(0x00);
+	DFPmsg.add(0x00);
+	DFPmsg.add(0xEF);
+	console.log(DFPmsg);
+  }
+  
+  ext.playSong() = function(song){
+	console.log('Play song ' + song);
+	var DFPmsg = new Uint8Array([ 0x7E, 0xFF, 0x06, 0x03, 0x03, song, 0x00, 0x00]); //, 0xFF, 0xFF, 0xEF]);
+    var msg = new Uint8Array([
+        START_SYSEX, SERIAL_MESSAGE, 0x03, 0x01, 0x00, 0x00, 0xFE, 0xED, END_SYSEX]);    
+	//device.send(msg.buffer);
+	//console.log(msg);	  
   };
   
   ext.digitalRead = function(pin) {
@@ -638,7 +669,10 @@
       //[' ', 'Imposta %m.leds a %m.outputs', 'digitalLED', 'LED Rosso 1', 'acceso'],
       [' ', 'Imposta %m.leds a %n%', 'setLED', 'LED Rosso1', 100],
       [' ', 'Aumenta %m.leds di %n%', 'changeLED', 'LED Rosso1', 10],
-      [' ', 'Suona canzone %n', 'playSong', 1],
+	  ['-'],
+	  [' ', 'Suona canzone %n%', 'playSong', '1', 1],
+	  [' ', 'Play', 'play'],
+	  [' ', 'Pause', 'pause'],
       ['-'],
       [' ', 'Ruota %m.servos fino a %n gradi', 'rotateServo', 'Servo1', 180],
       [' ', 'Ruota %m.servos di %n gradi', 'changeServo', 'Servo1', 20],
