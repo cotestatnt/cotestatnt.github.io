@@ -390,6 +390,7 @@
     return false;
   };
 
+  /*
   
   // CUSTOM external 
   ext.play() = function(){
@@ -423,6 +424,8 @@
 	//device.send(msg.buffer);
 	//console.log(msg);	  
   };
+  
+  */
   
   ext.digitalRead = function(pin) {
 	console.log('ext digitalRead ' + pin );
