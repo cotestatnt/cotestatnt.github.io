@@ -413,8 +413,9 @@
  
   
   ext.playSong = function(song){
-   console.log('Play song ' + song);
-   var DFPmsg = new Uint8Array([ 0x7E, 0xFF, 0x06, 0x03, 0x03, song, 0x00, 0x00]); //, 0xFF, 0xFF, 0xEF]); 
+  console.log('Play song ' + song);
+  try {
+    var DFPmsg = new Uint8Array([ 0x7E, 0xFF, 0x06, 0x03, 0x03, song, 0x00, 0x00]); //, 0xFF, 0xFF, 0xEF]);
     var sum = 0;
     var i;
     for(i=3; i<10; i++){
@@ -426,7 +427,12 @@
     DPFcmd.push(END_SYSEX);
              
 	device.send(DPFcmd.buffer);
-	console.log(DPFcmd);	  
+	console.log(DPFcmd);	
+  }
+  catch(err) {
+    console.log(err.message);
+  }  
+     
   };    
   
   ext.digitalRead = function(pin) {
