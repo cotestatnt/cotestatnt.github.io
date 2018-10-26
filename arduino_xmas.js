@@ -416,16 +416,17 @@
   console.log('Play song ' + song);
   try {
     var msg = new Uint8Array([START_SYSEX, SERIAL_MESSAGE,
-			      0x7E, 0xFF, 0x06, 0x03, 0x03, song, 0x00, 0x00]); //, 0xFF, 0xFF, 0xEF]);
+			      0x7E, 0xFF, 0x06, 0x03, song, 0x00, 0x00, 0xFF, 0xFF, 0xFE,
+			      END_SYSEX]);   
     var sum = 0;
     var i;
-    for(i=3; i<10; i++){
+    for(i=2; i<9; i++){
     	sum += msg[i];
     }
     sum = -sum;
-    msg.push(sum >> 8);  
-    msg.push(sum);
-    msg.push(END_SYSEX);
+    msg[8] = sum >> 8;
+    msg[9] = sum;
+	msg[10] = 0xFE;
              
 	device.send(msg.buffer);
 	console.log(msg);	
