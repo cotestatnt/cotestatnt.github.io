@@ -415,19 +415,20 @@
   ext.playSong = function(song){
   console.log('Play song ' + song);
   try {
-    var DFPmsg = new Uint8Array([ 0x7E, 0xFF, 0x06, 0x03, 0x03, song, 0x00, 0x00]); //, 0xFF, 0xFF, 0xEF]);
+    var msg = new Uint8Array([START_SYSEX, SERIAL_MESSAGE,
+			      0x7E, 0xFF, 0x06, 0x03, 0x03, song, 0x00, 0x00]); //, 0xFF, 0xFF, 0xEF]);
     var sum = 0;
     var i;
     for(i=3; i<10; i++){
-    	sum += DPFcmd[i];
+    	sum += msg[i];
     }
     sum = -sum;
-    DPFcmd.push(sum >> 8);  
-    DPFcmd.push(sum);
-    DPFcmd.push(END_SYSEX);
+    msg.push(sum >> 8);  
+    msg.push(sum);
+    msg.push(END_SYSEX);
              
-	device.send(DPFcmd.buffer);
-	console.log(DPFcmd);	
+	device.send(msg.buffer);
+	console.log(msg);	
   }
   catch(err) {
     console.log(err.message);
