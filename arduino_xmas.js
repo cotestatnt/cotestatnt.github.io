@@ -173,14 +173,7 @@
     device.send(msg.buffer);
   }
   
-  function testSerial() {
-    console.log('Test software serial');
-    var msg = new Uint8Array([
-        START_SYSEX, SERIAL_MESSAGE, 0x48, 0x65, 0x6C, 0x6C, 0x6F, END_SYSEX]);    
-	device.send(msg.buffer);
-	console.log(msg);		
-}
-  
+
   function setDigitalInputOutput(){
 	hwList.add(menus[lang]['buttons'][0], 2); 
 	hwList.add(menus[lang]['buttons'][1], 3); 
@@ -221,8 +214,7 @@
           if (i == sysexBytesRead) break;
         }
         queryAnalogMapping();
-		setDigitalInputOutput();
-		testSerial();
+		setDigitalInputOutput();		
         break;
       case ANALOG_MAPPING_RESPONSE:
         for (var pin = 0; pin < analogChannel.length; pin++)
@@ -395,46 +387,24 @@
   // CUSTOM external 
   ext.play = function(){
 	console.log('Play music');
-    var msg = new Uint8Array([START_SYSEX, SERIAL_MESSAGE,
-		                      0x7E, 0xFF, 0x06, 0x0D, 0x01, 0x00, 0x00, 0xFE, 0xED, 0xFE, 
-                              END_SYSEX]);    
+    var msg = new Uint8Array([START_SYSEX, SERIAL_MESSAGE, PLAY, 0x00, END_SYSEX]);    
 	device.send(msg.buffer);
 	console.log(msg);	  
   };
   
   ext.pause = function(){
 	console.log('Stop music');
-    var msg = new Uint8Array([START_SYSEX, SERIAL_MESSAGE, 
-                              0x7E, 0xFF, 0x06, 0x0E, 0x01, 0x00, 0x00, 0xFE, 0xEC, 0xFE, 
-                              END_SYSEX]);    
+    var msg = new Uint8Array([START_SYSEX, SERIAL_MESSAGE, PAUSE, 0x00, END_SYSEX]);    
 	device.send(msg.buffer);
 	console.log(msg);	  
   };
  
   
   ext.playSong = function(song){
-  console.log('Play song ' + song);
-  try {
-    var msg = new Uint8Array([START_SYSEX, SERIAL_MESSAGE,
-			      0x7E, 0xFF, 0x06, 0x03, song, 0x00, 0x00, 0xFF, 0xFF, 0xFE,
-			      END_SYSEX]);   
-    var sum = 0;
-    var i;
-    for(i=2; i<9; i++){
-    	sum += msg[i];
-    }
-    sum = -sum;
-    msg[9] = sum >> 8;
-    msg[10] = sum;
-	msg[11] = 0xFE;
-             
+	console.log('Play song ' + song);  
+    var msg = new Uint8Array([START_SYSEX, SERIAL_MESSAGE, PLAY_SONG, song, END_SYSEX]);   
 	device.send(msg.buffer);
-	console.log(msg);	
-  }
-  catch(err) {
-    console.log(err.message);
-  }  
-     
+	console.log(msg);	  
   };    
   
   ext.digitalRead = function(pin) {
