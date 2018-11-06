@@ -181,16 +181,22 @@
 	hwList.add(menus[lang]['buttons'][1], 17); 
 	hwList.add(menus[lang]['buttons'][2], 18); 
 	hwList.add(menus[lang]['buttons'][3], 19); 	
-	hwList.add(menus[lang]['leds'][0], 3); 
-	hwList.add(menus[lang]['leds'][1], 5); 
-	hwList.add(menus[lang]['leds'][2], 6); 
-	hwList.add(menus[lang]['leds'][3], 9); 
-	hwList.add(menus[lang]['leds'][4], 10); 
-	hwList.add(menus[lang]['leds'][5], 11); 
-	hwList.add(menus[lang]['servos'][0], 7); 
-	hwList.add(menus[lang]['servos'][1], 8); 
+	//RGB1
+	hwList.add(menus[lang]['leds'][0], 9); 
+	hwList.add(menus[lang]['leds'][1], 10); 
+	hwList.add(menus[lang]['leds'][2], 11);
+	// RGB2
+	hwList.add(menus[lang]['leds'][3], 3); 
+	hwList.add(menus[lang]['leds'][4], 5); 
+	hwList.add(menus[lang]['leds'][5], 6); 
+	 
 	hwList.add(menus[lang]['hwIn'][0], 0); 
 	hwList.add(menus[lang]['hwIn'][1], 1); 
+	
+	// Servo motor
+	hwList.add(menus[lang]['servos'][0], 7); 
+	hwList.add(menus[lang]['servos'][1], 8); 
+	
 	
 	pinMode(hwList.devices[0].pin, PULLUP);	
 	pinMode(hwList.devices[1].pin, PULLUP);	
@@ -202,10 +208,15 @@
 	pinMode(hwList.devices[7].pin, PWM);
 	pinMode(hwList.devices[8].pin, PWM);
 	pinMode(hwList.devices[9].pin, PWM);	
-	pinMode(hwList.devices[10].pin, SERVO);
-	pinMode(hwList.devices[11].pin, SERVO);
-	pinMode(hwList.devices[12].pin, ANALOG);
-	pinMode(hwList.devices[13].pin, ANALOG);
+	pinMode(hwList.devices[10].pin, ANALOG);
+	pinMode(hwList.devices[11].pin, ANALOG);
+	
+	//pinMode(hwList.devices[12].pin, SERVO);
+	//pinMode(hwList.devices[13].pin, SERVO);
+	
+	
+	//rotateServo(7, 90);
+	//rotateServo(8, 90);
 	
 	console.log("Digital Input/Output configured");  
   }
@@ -383,6 +394,7 @@
   }
 
   function rotateServo(pin, deg) {
+	
     if (!hasCapability(pin, SERVO)) {
       console.log('ERROR: valid servo pins are ' + pinModes[SERVO].join(', '));
       return;
@@ -525,15 +537,18 @@
   };
 
   ext.rotateServo = function(servo, deg) {
+	pinMode(hwList.devices[12].pin, SERVO);
     var hw = hwList.search(servo);
     if (!hw) return;
     if (deg < 0) deg = 0;
     else if (deg > 180) deg = 180;
     rotateServo(hw.pin, deg);
     hw.val = deg;
+	pinMode(hwList.devices[12].pin, INPUT);
   };
 
   ext.changeServo = function(servo, change) {
+	pinMode(hwList.devices[12].pin, SERVO);
     var hw = hwList.search(servo);
     if (!hw) return;
     var deg = hw.val + change;
@@ -541,6 +556,7 @@
     else if (deg > 180) deg = 180;
     rotateServo(hw.pin, deg);
     hw.val = deg;
+	pinMode(hwList.devices[12].pin, INPUT);
   };
 
   ext.setLED = function(led, val) {
@@ -573,7 +589,7 @@
 	console.log('ext.setRGB ' + R + ' ' + G + ' ' + B );
 	
 	var rgb = menus[lang]['RGBs'].indexOf(RGBs)
-	if(rgb == 0){
+	if(rgb == 1){
 		analogWrite(3, R);
 		analogWrite(5, G);
 		analogWrite(6, B);
@@ -713,8 +729,8 @@
 	  
 	    
       ['-'],
-      [' ', 'Ruota %m.servos fino a %n gradi', 'rotateServo', 'Servo1', 180],
-      [' ', 'Ruota %m.servos di %n gradi', 'changeServo', 'Servo1', 20],
+      [' ', 'Ruota %m.servos fino a %n gradi', 'rotateServo', 'Motore2', 90],
+      [' ', 'Ruota %m.servos di %n gradi', 'changeServo', 'Motore1', 20],
       ['-'],
       ['h', 'Quando %m.buttons è %m.btnStates', 'whenButton', 'Pulsante A', 'premuto'],
       ['b', '%m.buttons premuto?', 'isButtonPressed', 'Pulsante A'],
@@ -743,11 +759,11 @@
       buttons: ['Pulsante A', 'Pulsante B', 'Pulsante C', 'Pulsante D' ],
       btnStates: ['premuto', 'rilasciato'],
       hwIn: ['Potenziometro', 'Sensore di luce'],
-      hwOut: ['LED Rosso1', 'LED Verde1', 'LED Blu1', 'LED Rosso2', 'LED Verde2', 'LED Blu2', 'Servo1', 'Servo2'],
+      hwOut: ['LED Rosso1', 'LED Verde1', 'LED Blu1', 'LED Rosso2', 'LED Verde2', 'LED Blu2', 'Motore1', 'Motore2'],
       leds: ['LED Rosso1', 'LED Verde1', 'LED Blu1', 'LED Rosso2', 'LED Verde2', 'LED Blu2'],
       outputs: ['acceso', 'spento'],
       ops: ['>', '=', '<'],
-      servos: ['Servo1', 'Servo2'],
+      servos: ['Motore1', 'Motore2'],
 	  RGBs: ['RGB 1', 'RGB 2'],
 	  color_list: ['Bianco', 'Nero', 'Rosso', 'Verde', 'Blu', 'Arancio', 'Violetto', 'Azzurro', 'Acquamarina']
     }
