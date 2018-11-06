@@ -12,7 +12,8 @@
  *You should have received a copy of the GNU General Public License
  *along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
+ 
+ 
 (function(ext) {
 
   var PIN_MODE = 0xF4,
@@ -35,6 +36,7 @@
 	PREV = 0x02;
 	PLAY = 0x0D;
 	PAUSE = 0x0E;
+	VOLUME = 0x06;
 	
 	
   var INPUT = 0x00,
@@ -175,19 +177,36 @@
   
 
   function setDigitalInputOutput(){
-	hwList.add(menus[lang]['buttons'][0], 2); 
-	hwList.add(menus[lang]['buttons'][1], 3); 
-	hwList.add(menus[lang]['buttons'][2], 4); 
+	hwList.add(menus[lang]['buttons'][0], 16); 
+	hwList.add(menus[lang]['buttons'][1], 17); 
+	hwList.add(menus[lang]['buttons'][2], 18); 
+	hwList.add(menus[lang]['buttons'][3], 19); 	
+	hwList.add(menus[lang]['leds'][0], 3); 
+	hwList.add(menus[lang]['leds'][1], 5); 
+	hwList.add(menus[lang]['leds'][2], 6); 
+	hwList.add(menus[lang]['leds'][3], 9); 
+	hwList.add(menus[lang]['leds'][4], 10); 
+	hwList.add(menus[lang]['leds'][5], 11); 
+	hwList.add(menus[lang]['servos'][0], 7); 
+	hwList.add(menus[lang]['servos'][1], 8); 
+	hwList.add(menus[lang]['hwIn'][0], 0); 
+	hwList.add(menus[lang]['hwIn'][1], 1); 
+	
 	pinMode(hwList.devices[0].pin, PULLUP);	
 	pinMode(hwList.devices[1].pin, PULLUP);	
 	pinMode(hwList.devices[2].pin, PULLUP);	
-	
-	hwList.add(menus[lang]['leds'][0], 5); 
-	hwList.add(menus[lang]['leds'][1], 6); 
-	hwList.add(menus[lang]['leds'][2], 9); 
-	pinMode(hwList.devices[3].pin, PWM);
+	pinMode(hwList.devices[3].pin, PULLUP);	
 	pinMode(hwList.devices[4].pin, PWM);
-	pinMode(hwList.devices[5].pin, PWM);	
+	pinMode(hwList.devices[5].pin, PWM);
+	pinMode(hwList.devices[6].pin, PWM);	
+	pinMode(hwList.devices[7].pin, PWM);
+	pinMode(hwList.devices[8].pin, PWM);
+	pinMode(hwList.devices[9].pin, PWM);	
+	pinMode(hwList.devices[10].pin, SERVO);
+	pinMode(hwList.devices[11].pin, SERVO);
+	pinMode(hwList.devices[12].pin, ANALOG);
+	pinMode(hwList.devices[13].pin, ANALOG);
+	
 	console.log("Digital Input/Output configured");  
   }
   function setDigitalInputs(portNum, portData) {
@@ -376,6 +395,14 @@
     device.send(msg.buffer);
 	console.log('rotateServo ' + msg );
   }
+  
+  
+  function mapValues(val, aMin, aMax, bMin, bMax) {
+    var output = (((bMax - bMin) * (val - aMin)) / (aMax - aMin)) + bMin;
+    return Math.round(output);
+  };
+  
+  
 
   ext.whenConnected = function() {	 
     if (notifyConnection) return true;
@@ -398,6 +425,20 @@
 	device.send(msg.buffer);
 	console.log(msg);	  
   };
+  
+  ext.next = function(){
+	console.log('Play music');
+    var msg = new Uint8Array([START_SYSEX, SERIAL_MESSAGE, NEXT, 0x00, END_SYSEX]);    
+	device.send(msg.buffer);
+	console.log(msg);	  
+  };
+  
+  ext.prev = function(){
+	console.log('Stop music');
+    var msg = new Uint8Array([START_SYSEX, SERIAL_MESSAGE, PREV, 0x00, END_SYSEX]);    
+	device.send(msg.buffer);
+	console.log(msg);	  
+  };
  
   
   ext.playSong = function(song){
@@ -406,6 +447,13 @@
 	device.send(msg.buffer);
 	console.log(msg);	  
   };    
+  
+  ext.volume = function(volume){
+	console.log('Set volume ' + volume);  
+    var msg = new Uint8Array([START_SYSEX, SERIAL_MESSAGE, VOLUME, volume, END_SYSEX]);   
+	device.send(msg.buffer);
+	console.log(msg);	  
+  };  
   
   ext.digitalRead = function(pin) {
 	console.log('ext digitalRead ' + pin );
@@ -438,7 +486,7 @@
     var hw = hwList.search(btn);	
 	console.log('ext.isButtonPressed ' + digitalRead(hw.pin));	
     if (!hw) return;		
-    return digitalRead(hw.pin);
+    return !digitalRead(hw.pin);
   };
 
   ext.analogRead = function(pin) {	
@@ -512,11 +560,40 @@
     hw.val = b;
   };
   
+  
+  ext.setRGB = function(RGBs, color) {
+	//			  Bianco	Nero	  Rosso		Verde	  Blue		Arancio   Violetto  Azzurro, Acquamarina
+    var colors = [0xFFFFFF, 0x000000, 0xFF0000, 0x00FF00, 0x0000FF, 0xFF9600, 0x9600FF, 0x0096FF, 0x00FF96];
+    console.log('ext.setRGB ' + color );
+	var idx = menus[lang]['color_list'].indexOf(color);		
+	
+	var R = mapValues( 0x0000FF & colors[idx] >> 16, 0, 255, 0, 100);
+	var G = mapValues( 0x0000FF & colors[idx] >> 8, 0, 255, 0, 100);
+	var B = mapValues( 0x0000FF & colors[idx], 0, 255, 0, 100);
+	console.log('ext.setRGB ' + R + ' ' + G + ' ' + B );
+	
+	var rgb = menus[lang]['RGBs'].indexOf(RGBs)
+	if(rgb == 0){
+		analogWrite(3, R);
+		analogWrite(5, G);
+		analogWrite(6, B);
+	}
+    else {
+		analogWrite(9, R);
+		analogWrite(10, G);
+		analogWrite(11, B);		
+	}
+  };
+  
+  
+  
+  
   ext.readInput = function(name) {
-    var hw = hwList.search(name);
-	console.log('ext.readInput ' + hw );
+    var hw = hwList.search(name);		
     if (!hw) return;
-    return analogRead(hw.pin);
+	var anVal = analogRead(hw.pin); 
+	console.log('ext.readInput ' + anVal );
+    return anVal;
   };
 
   ext.whenButton = function(btn, state) {
@@ -524,25 +601,27 @@
 	console.log('ext.whenButton ' + hw );
     if (!hw) return;	
     if (state === menus[lang]['btnStates'][0])
-      return digitalRead(hw.pin);
-    else if (state === menus[lang]['btnStates'][1])
       return !digitalRead(hw.pin);
+    else if (state === menus[lang]['btnStates'][1])
+      return digitalRead(hw.pin);
   };
 
 
   ext.whenInput = function(name, op, val) {
-    var hw = hwList.search(name);
-	console.log('ext.whenInput ' + hw );
+    var hw = hwList.search(name);	
     if (!hw) return;
+	var res = false;		
     if (op == '>')
-      return analogRead(hw.pin) > val;
+	  res = analogRead(hw.pin) > val;       
     else if (op == '<')
-      return analogRead(hw.pin) < val;
+      res =  analogRead(hw.pin) < val;
     else if (op == '=')
-      return analogRead(hw.pin) == val;
-    else
-      return false;
+      res =  analogRead(hw.pin) == val;
+  
+    console.log('ext.whenInput ' + hw );
+    return res;
   };
+ 
 
   ext.mapValues = function(val, aMin, aMax, bMin, bMax) {
     var output = (((bMax - bMin) * (val - aMin)) / (aMax - aMin)) + bMin;
@@ -613,37 +692,6 @@
   }
 
   var blocks = {
-    en: [
-      ['h', 'when device is connected', 'whenConnected'],	  
-      //[' ', 'connect %m.hwOut to pin %n', 'connectHW', 'led A', 3],
-      //[' ', 'connect %m.hwIn to analog %n', 'connectHW', 'rotation knob', 0],
-      ['-'],
-      [' ', 'set %m.leds %m.outputs', 'digitalLED', 'led A', 'on'],
-      [' ', 'set %m.leds brightness to %n%', 'setLED', 'led A', 100],
-      [' ', 'change %m.leds brightness by %n%', 'changeLED', 'led A', 20],
-      ['-'],
-      [' ', 'rotate %m.servos to %n degrees', 'rotateServo', 'servo A', 180],
-      [' ', 'rotate %m.servos by %n degrees', 'changeServo', 'servo A', 20],
-      ['-'],
-      ['h', 'when %m.buttons is %m.btnStates', 'whenButton', 'button A', 'pressed'],
-      ['b', '%m.buttons pressed?', 'isButtonPressed', 'button A'],
-      ['-'],
-      ['h', 'when %m.hwIn %m.ops %n%', 'whenInput', 'rotation knob', '>', 50],
-      ['r', 'read %m.hwIn', 'readInput', 'rotation knob'],
-      ['-']
-	  /*
-      [' ', 'set pin %n %m.outputs', 'digitalWrite', 1, 'on'],
-      [' ', 'set pin %n to %n%', 'analogWrite', 3, 100],
-      ['-'],
-      ['h', 'when pin %n is %m.outputs', 'whenDigitalRead', 1, 'on'],
-      ['b', 'pin %n on?', 'digitalRead', 1],
-      ['-'],
-      ['h', 'when analog %n %m.ops %n%', 'whenAnalogRead', 1, '>', 50],
-      ['r', 'read analog %n', 'analogRead', 0],
-      ['-'],
-      ['r', 'map %n from %n %n to %n %n', 'mapValues', 50, 0, 100, -240, 240]
-	  */
-    ],
     it: [
       ['h', 'Quando Arduino è connesso', 'whenConnected'],	  
       //[' ', 'Connetti il %m.hwOut al pin %n', 'connectHW', 'LED Rosso A', 3],
@@ -651,11 +699,18 @@
       ['-'],
       //[' ', 'Imposta %m.leds a %m.outputs', 'digitalLED', 'LED Rosso 1', 'acceso'],
       [' ', 'Imposta %m.leds a %n%', 'setLED', 'LED Rosso1', 100],
-      [' ', 'Aumenta %m.leds di %n%', 'changeLED', 'LED Rosso1', 10],
-	    
-	  [' ', 'Suona canzone %n', 'playSong', 1],
+      [' ', 'Aumenta %m.leds di %n%', 'changeLED', 'LED Rosso1', 10],	  
+	  [' ', 'Imposta %m.RGBs a %m.color_list', 'setRGB', 'RGB 1', 'Arancio'],
+	  
+	  
+	  ['-'],
 	  [' ', 'Avvia la musica', 'play'],
 	  [' ', 'Ferma la musica', 'pause'],
+	  [' ', 'Prossimo', 'next'],
+	  [' ', 'Precedente', 'prev'],
+	  [' ', 'Suona canzone %n', 'playSong', 1],
+	  [' ', 'Imposta volume a %n', 'volume', 25],
+	  
 	    
       ['-'],
       [' ', 'Ruota %m.servos fino a %n gradi', 'rotateServo', 'Servo1', 180],
@@ -666,6 +721,7 @@
       ['-'],
       ['h', 'Quando %m.hwIn %m.ops %n%', 'whenInput', 'Potenziometro', '>', 50],
       ['r', 'Leggi %m.hwIn', 'readInput', 'Potenziometro'],
+	  ['b', 'Se %m.hwIn %m.ops %n%', 'whenInput', 'Potenziometro', '>', 50],
       ['-']
 	   /*
       [' ', 'Imposta pin %n a %m.outputs', 'digitalWrite', 1, 'acceso'],
@@ -683,26 +739,17 @@
   };
 
   var menus = {
-    en: {
-      buttons: ['button A', 'button B', 'button C', 'button D'],
-      btnStates: ['pressed', 'released'],
-      hwIn: ['rotation knob', 'light sensor', 'temperature sensor'],
-      hwOut: ['red led 1', 'green led 1', 'blue led 1', 'red led 2', 'green led 2', 'blue led 2', 'button A', 'button B', 'button C', 'button D', 'servo 2', 'servo 2'],
-      leds: ['red led 1', 'green led 1', 'blue led 1', 'red led 2', 'green led 2', 'blue led 2'],
-      outputs: ['on', 'off'],
-      ops: ['>', '=', '<'],
-      servos: ['servo 1', 'servo 2']
-    },
-    
     it: {
       buttons: ['Pulsante A', 'Pulsante B', 'Pulsante C', 'Pulsante D' ],
       btnStates: ['premuto', 'rilasciato'],
-      hwIn: ['Potenziometro', 'Sensore di luce', 'Sensore di temperatura'],
-      hwOut: ['LED Rosso1', 'LED Verde1', 'LED Blu1', 'LED Rosso2', 'LED Verde2', 'LED Blu2', 'Pulsante A', 'Pulsante B', 'Pulsante C', 'Pulsante D', 'Servo1', 'Servo2'],
+      hwIn: ['Potenziometro', 'Sensore di luce'],
+      hwOut: ['LED Rosso1', 'LED Verde1', 'LED Blu1', 'LED Rosso2', 'LED Verde2', 'LED Blu2', 'Servo1', 'Servo2'],
       leds: ['LED Rosso1', 'LED Verde1', 'LED Blu1', 'LED Rosso2', 'LED Verde2', 'LED Blu2'],
       outputs: ['acceso', 'spento'],
       ops: ['>', '=', '<'],
-      servos: ['Servo1', 'Servo2']
+      servos: ['Servo1', 'Servo2'],
+	  RGBs: ['RGB 1', 'RGB 2'],
+	  color_list: ['Bianco', 'Nero', 'Rosso', 'Verde', 'Blu', 'Arancio', 'Violetto', 'Azzurro', 'Acquamarina']
     }
   };
 
