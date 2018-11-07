@@ -183,6 +183,7 @@
 	hwList.add(menus[lang]['buttons'][1], 17); 
 	hwList.add(menus[lang]['buttons'][2], 18); 
 	hwList.add(menus[lang]['buttons'][3], 19); 	
+	
 	//RGB1 (real pin are defined inside Arduino firmware (9, 10, 11)
 	hwList.add(menus[lang]['leds'][0], 9); 
 	hwList.add(menus[lang]['leds'][1], 10); 
@@ -196,7 +197,9 @@
 	hwList.add(menus[lang]['hwIn'][1], 1); 	
 	// Servo motor
 	hwList.add(menus[lang]['servos'][0], 7); 
-	hwList.add(menus[lang]['servos'][1], 8); 
+	hwList.add(menus[lang]['servos'][1], 4); 
+	
+	hwList.add(menus[lang]['digitalIn'][0], 2); 
 	
 	
 	pinMode(hwList.devices[0].pin, PULLUP);	
@@ -218,8 +221,10 @@
 	pinMode(hwList.devices[12].pin, SERVO);
 	pinMode(hwList.devices[13].pin, SERVO);
 	
-	rotateServo(7, 90);
-	rotateServo(8, 90);
+	pinMode(hwList.devices[14].pin, PULLUP);	
+	
+	//rotateServo(7, 90);
+	//rotateServo(8, 90);
 	
 	console.log("Digital Input/Output configured");  
   }
@@ -414,18 +419,23 @@
   
   
   
-  function rotateServo(pin, deg) {	
+  function rotateServo(pin, deg, delay) {	
     if (!hasCapability(pin, SERVO)) {
       console.log('ERROR: valid servo pins are ' + pinModes[SERVO].join(', '));
       return;
     }
-    //pinMode(pin, SERVO);
+    pinMode(pin, SERVO);
     var msg = new Uint8Array([
         ANALOG_MESSAGE | (pin & 0x0F),
         deg & 0x7F,
         deg >> 0x07]);
     device.send(msg.buffer);
-	console.log('rotateServo ' + msg );
+	console.log('rotateServo ' + msg );	
+	setTimeout(stopServo, delay);
+	function stopServo() {
+		pinMode(pin, OUTPUT);
+		digitalWrite(pin, LOW);
+	}
   }
   
   
@@ -519,6 +529,14 @@
     if (!hw) return;		
     return !digitalRead(hw.pin);
   };
+  
+  
+  ext.isPirActive = function(pir) {
+    var hw = hwList.search(pir);	
+	console.log('ext.isPirActive ' + digitalRead(hw.pin));	
+    if (!hw) return;		
+    return digitalRead(hw.pin);
+  };
 
   ext.analogRead = function(pin) {	
     return analogRead(pin);
@@ -556,11 +574,13 @@
   };
 
   ext.rotateServo = function(servo, deg) {	
-    var hw = hwList.search(servo);
+    var hw = hwList.search(servo);	
     if (!hw) return;
     if (deg < 0) deg = 0;
     else if (deg > 180) deg = 180;
-    rotateServo(hw.pin, deg);
+	
+	var delay = 4*Math.abs(deg - hw.val);
+    rotateServo(hw.pin, deg, delay);
     hw.val = deg;	
   };
 
@@ -570,7 +590,8 @@
     var deg = hw.val + change;
     if (deg < 0) deg = 0;
     else if (deg > 180) deg = 180;
-    rotateServo(hw.pin, deg);
+	var delay = 4*Math.abs(deg - hw.val);
+    rotateServo(hw.pin, deg, delay);
     hw.val = deg;	
   };
 
@@ -606,9 +627,9 @@
 	var rgb = menus[lang]['RGBs'].indexOf(RGBs)
 	if(rgb == 0){
 		// Soft PWM
-		analogWrite(0, R);
-		analogWrite(1, G);
-		analogWrite(2, B);	
+		analogWrite(9, R);
+		analogWrite(10, G);
+		analogWrite(11, B);	
 	}
     else {
 		analogWrite(3, R);
@@ -748,8 +769,9 @@
       [' ', 'Ruota %m.servos fino a %n gradi', 'rotateServo', 'Motore1', 90],
       [' ', 'Ruota %m.servos di %n gradi', 'changeServo', 'Motore1', 20],
       ['-'],
-      ['h', 'Quando %m.buttons è %m.btnStates', 'whenButton', 'Pulsante A', 'premuto'],
+      ['h', 'Quando %m.buttons è %m.btnStates', 'whenButton', 'Pulsante A', 'Premuto'],
       ['b', '%m.buttons premuto?', 'isButtonPressed', 'Pulsante A'],
+      ['b', '%m.digitalIn attivo?', 'isPirActive', 'Sensore presenza'],
       ['-'],
       ['h', 'Quando %m.hwIn %m.ops %n%', 'whenInput', 'Potenziometro', '>', 50],
       ['r', 'Leggi %m.hwIn', 'readInput', 'Potenziometro'],
@@ -773,7 +795,9 @@
   var menus = {
     it: {
       buttons: ['Pulsante A', 'Pulsante B', 'Pulsante C', 'Pulsante D' ],
-      btnStates: ['premuto', 'rilasciato'],
+      btnStates: ['Premuto', 'Rilasciato'],
+	  digitalIn: [ 'Sensore presenza'],
+	  digitalStates: [ 'Attivo', 'Disattivo'],
       hwIn: ['Potenziometro', 'Sensore di luce'],
       hwOut: ['LED Rosso1', 'LED Verde1', 'LED Blu1', 'LED Rosso2', 'LED Verde2', 'LED Blu2', 'Motore1', 'Motore2'],
       leds: ['LED Rosso1', 'LED Verde1', 'LED Blu1', 'LED Rosso2', 'LED Verde2', 'LED Blu2'],
