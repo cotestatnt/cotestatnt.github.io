@@ -211,12 +211,12 @@
 	pinMode(hwList.devices[10].pin, ANALOG);
 	pinMode(hwList.devices[11].pin, ANALOG);
 	
-	//pinMode(hwList.devices[12].pin, SERVO);
-	//pinMode(hwList.devices[13].pin, SERVO);
+	pinMode(hwList.devices[12].pin, SERVO);
+	pinMode(hwList.devices[13].pin, SERVO);
 	
 	
-	//rotateServo(7, 90);
-	//rotateServo(8, 90);
+	rotateServo(7, 90);
+	rotateServo(8, 90);
 	
 	console.log("Digital Input/Output configured");  
   }
@@ -384,7 +384,7 @@
     if (val < 0) val = 0;
     else if (val > 100) val = 100;
     val = Math.round((val / 100) * 255);
-    pinMode(pin, PWM);
+    //pinMode(pin, PWM);
     var msg = new Uint8Array([
         ANALOG_MESSAGE | (pin & 0x0F),
         val & 0x7F,
@@ -399,7 +399,7 @@
       console.log('ERROR: valid servo pins are ' + pinModes[SERVO].join(', '));
       return;
     }
-    pinMode(pin, SERVO);
+    //pinMode(pin, SERVO);
     var msg = new Uint8Array([
         ANALOG_MESSAGE | (pin & 0x0F),
         deg & 0x7F,
@@ -536,15 +536,13 @@
     hwList.add(hw, pin);    
   };
 
-  ext.rotateServo = function(servo, deg) {
-	pinMode(hwList.devices[12].pin, SERVO);
+  ext.rotateServo = function(servo, deg) {	
     var hw = hwList.search(servo);
     if (!hw) return;
     if (deg < 0) deg = 0;
     else if (deg > 180) deg = 180;
     rotateServo(hw.pin, deg);
-    hw.val = deg;
-	pinMode(hwList.devices[12].pin, INPUT);
+    hw.val = deg;	
   };
 
   ext.changeServo = function(servo, change) {
@@ -729,7 +727,7 @@
 	  
 	    
       ['-'],
-      [' ', 'Ruota %m.servos fino a %n gradi', 'rotateServo', 'Motore2', 90],
+      [' ', 'Ruota %m.servos fino a %n gradi', 'rotateServo', 'Motore1', 90],
       [' ', 'Ruota %m.servos di %n gradi', 'changeServo', 'Motore1', 20],
       ['-'],
       ['h', 'Quando %m.buttons è %m.btnStates', 'whenButton', 'Pulsante A', 'premuto'],
