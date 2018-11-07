@@ -43,6 +43,7 @@
     OUTPUT = 0x01,
     ANALOG = 0x02,
     PWM = 0x03,
+	SOFT_PWM = 0xF3,
     SERVO = 0x04,
     SHIFT = 0x05,
     I2C = 0x06,
@@ -177,11 +178,12 @@
   
 
   function setDigitalInputOutput(){
+	// Digital Input
 	hwList.add(menus[lang]['buttons'][0], 16); 
 	hwList.add(menus[lang]['buttons'][1], 17); 
 	hwList.add(menus[lang]['buttons'][2], 18); 
 	hwList.add(menus[lang]['buttons'][3], 19); 	
-	//RGB1
+	//RGB1 (real pin are defined inside Arduino firmware (9, 10, 11)
 	hwList.add(menus[lang]['leds'][0], 9); 
 	hwList.add(menus[lang]['leds'][1], 10); 
 	hwList.add(menus[lang]['leds'][2], 11);
@@ -189,10 +191,9 @@
 	hwList.add(menus[lang]['leds'][3], 3); 
 	hwList.add(menus[lang]['leds'][4], 5); 
 	hwList.add(menus[lang]['leds'][5], 6); 
-	 
+	// Analog Input
 	hwList.add(menus[lang]['hwIn'][0], 0); 
-	hwList.add(menus[lang]['hwIn'][1], 1); 
-	
+	hwList.add(menus[lang]['hwIn'][1], 1); 	
 	// Servo motor
 	hwList.add(menus[lang]['servos'][0], 7); 
 	hwList.add(menus[lang]['servos'][1], 8); 
@@ -202,18 +203,20 @@
 	pinMode(hwList.devices[1].pin, PULLUP);	
 	pinMode(hwList.devices[2].pin, PULLUP);	
 	pinMode(hwList.devices[3].pin, PULLUP);	
-	pinMode(hwList.devices[4].pin, PWM);
-	pinMode(hwList.devices[5].pin, PWM);
-	pinMode(hwList.devices[6].pin, PWM);	
+	
+	pinMode(hwList.devices[4].pin, SOFT_PWM);
+	pinMode(hwList.devices[5].pin, SOFT_PWM);
+	pinMode(hwList.devices[6].pin, SOFT_PWM);	
+	
 	pinMode(hwList.devices[7].pin, PWM);
 	pinMode(hwList.devices[8].pin, PWM);
 	pinMode(hwList.devices[9].pin, PWM);	
+	
 	pinMode(hwList.devices[10].pin, ANALOG);
 	pinMode(hwList.devices[11].pin, ANALOG);
 	
 	pinMode(hwList.devices[12].pin, SERVO);
 	pinMode(hwList.devices[13].pin, SERVO);
-	
 	
 	rotateServo(7, 90);
 	rotateServo(8, 90);
@@ -320,6 +323,9 @@
             parsingSysex = true;
             sysexBytesRead = 0;
             break;
+		  default:
+			//console.log('Received: ' + inputData);
+			break;
         }
       }
     }
@@ -376,25 +382,39 @@
 	//console.log('digitalWrite ' + msg );
   }
 
+  
+  
+  
   function analogWrite(pin, val) {
-    if (!hasCapability(pin, PWM)) {
-      console.log('ERROR: valid PWM pins are ' + pinModes[PWM].join(', '));
-      return;
-    }
-    if (val < 0) val = 0;
-    else if (val > 100) val = 100;
-    val = Math.round((val / 100) * 255);
-    //pinMode(pin, PWM);
-    var msg = new Uint8Array([
-        ANALOG_MESSAGE | (pin & 0x0F),
-        val & 0x7F,
-        val >> 7]);
+	
+    if (pin == 9 | pin == 10 | pin == 11) {              
+		console.log('Software PWM on pin ' + pin);		
+    } 
+	else if (hasCapability(pin, PWM)) {              
+		console.log('Hardware PWM on pin ' + pin);
+    } 
+	else {
+		console.log('ERROR: valid PWM pins are ' + pinModes[PWM].join(', '));
+		return;	
+	}
+				
+	if (val < 0) val = 0;
+	else if (val > 100) val = 100;
+	val = Math.round((val / 100) * 255);
+	//pinMode(pin, PWM);
+	var msg = new Uint8Array([
+		ANALOG_MESSAGE | (pin & 0x0F),
+		val & 0x7F,
+		val >> 7]);	
+	
     device.send(msg.buffer);
 	console.log('analogWrite ' + msg );
   }
 
-  function rotateServo(pin, deg) {
-	
+  
+  
+  
+  function rotateServo(pin, deg) {	
     if (!hasCapability(pin, SERVO)) {
       console.log('ERROR: valid servo pins are ' + pinModes[SERVO].join(', '));
       return;
@@ -415,7 +435,6 @@
   };
   
   
-
   ext.whenConnected = function() {	 
     if (notifyConnection) return true;
     return false;
@@ -545,16 +564,14 @@
     hw.val = deg;	
   };
 
-  ext.changeServo = function(servo, change) {
-	pinMode(hwList.devices[12].pin, SERVO);
+  ext.changeServo = function(servo, change) {	
     var hw = hwList.search(servo);
     if (!hw) return;
     var deg = hw.val + change;
     if (deg < 0) deg = 0;
     else if (deg > 180) deg = 180;
     rotateServo(hw.pin, deg);
-    hw.val = deg;
-	pinMode(hwList.devices[12].pin, INPUT);
+    hw.val = deg;	
   };
 
   ext.setLED = function(led, val) {
@@ -587,15 +604,16 @@
 	console.log('ext.setRGB ' + R + ' ' + G + ' ' + B );
 	
 	var rgb = menus[lang]['RGBs'].indexOf(RGBs)
-	if(rgb == 1){
-		analogWrite(3, R);
-		analogWrite(5, G);
-		analogWrite(6, B);
+	if(rgb == 0){
+		// Soft PWM
+		analogWrite(0, R);
+		analogWrite(1, G);
+		analogWrite(2, B);	
 	}
     else {
-		analogWrite(9, R);
-		analogWrite(10, G);
-		analogWrite(11, B);		
+		analogWrite(3, R);
+		analogWrite(5, G);
+		analogWrite(6, B);			
 	}
   };
   
