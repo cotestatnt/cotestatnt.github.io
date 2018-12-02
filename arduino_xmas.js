@@ -223,8 +223,12 @@
 	
 	pinMode(hwList.devices[14].pin, INPUT);	
 	
-	//rotateServo(7, 90);
-	//rotateServo(8, 90);
+	rotateServo(12, 5);
+	rotateServo(13, 5);	
+	rotateServo(12, 175);
+	rotateServo(13, 175);	
+	rotateServo(12, 90);
+	rotateServo(13, 90);
 	
 	console.log("Digital Input/Output configured");  
   }
@@ -580,7 +584,7 @@
     if (deg < 0) deg = 0;
     else if (deg > 180) deg = 180;
 	
-	var delay = 4*Math.abs(deg - hw.val);
+	var delay = 4*Math.abs(deg - hw.val)+500;
     rotateServo(hw.pin, deg, delay);
     hw.val = deg;	
   };
