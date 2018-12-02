@@ -222,10 +222,7 @@
 	pinMode(hwList.devices[13].pin, SERVO);
 	
 	pinMode(hwList.devices[14].pin, INPUT);	
-	
-	rotateServo(12, 90);
-	rotateServo(13, 90);
-	
+
 	console.log("Digital Input/Output configured");  
   }
   function setDigitalInputs(portNum, portData) {
@@ -252,7 +249,9 @@
           if (i == sysexBytesRead) break;
         }
         queryAnalogMapping();
-		setDigitalInputOutput();		
+		setDigitalInputOutput();
+		rotateServo(12, 0);
+		rotateServo(13, 0);
         break;
       case ANALOG_MAPPING_RESPONSE:
         for (var pin = 0; pin < analogChannel.length; pin++)
@@ -390,8 +389,7 @@
   
   
   
-  function analogWrite(pin, val) {
-	
+  function analogWrite(pin, val) {	
     if (pin == 9 | pin == 10 | pin == 11) {              
 		console.log('Software PWM on pin ' + pin);		
     } 
@@ -468,14 +466,14 @@
   };
   
   ext.next = function(){
-	console.log('Play music');
+	console.log('Next song');
     var msg = new Uint8Array([START_SYSEX, SERIAL_MESSAGE, NEXT, 0x00, END_SYSEX]);    
 	device.send(msg.buffer);
 	console.log(msg);	  
   };
   
   ext.prev = function(){
-	console.log('Stop music');
+	console.log('Previous song');
     var msg = new Uint8Array([START_SYSEX, SERIAL_MESSAGE, PREV, 0x00, END_SYSEX]);    
 	device.send(msg.buffer);
 	console.log(msg);	  
@@ -707,7 +705,7 @@
     device = potentialDevices.shift();
     if (!device) return;
 
-    device.open({ stopBits: 0, bitRate: 57600, ctsFlowControl: 0 });
+    device.open({ stopBits: 0, bitRate: 57600, ctsFlowControl: 0, bufferSize: 8192});
     console.log('Attempting connection with ' + device.id);
     device.set_receive_handler(function(data) {
       var inputData = new Uint8Array(data);
