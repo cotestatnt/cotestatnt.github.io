@@ -147,7 +147,7 @@
         queryFirmware();
         pinging = true;
       }
-    }, 100);
+    }, 200);
   }
 
   function hasCapability(pin, mode) {
@@ -249,9 +249,7 @@
           if (i == sysexBytesRead) break;
         }
         queryAnalogMapping();
-		setDigitalInputOutput();
-		rotateServo(12, 0);
-		rotateServo(13, 0);
+		setDigitalInputOutput();	
         break;
       case ANALOG_MAPPING_RESPONSE:
         for (var pin = 0; pin < analogChannel.length; pin++)
@@ -277,7 +275,7 @@
           clearTimeout(watchdog);
           watchdog = null;
           connected = true;
-          setTimeout(init, 200);
+          setTimeout(init, 100);
         }
         pinging = false;
         pingCount = 0;
@@ -611,10 +609,11 @@
     hw.val = b;
   };
   
+  // 	deep pink 	#FF1493 	(255,20,147)
   
   ext.setRGB = function(RGBs, color) {
-	//			  Bianco	Nero	  Rosso		Verde	  Blue		Arancio   Violetto  Azzurro, Acquamarina
-    var colors = [0xFFFFFF, 0x000000, 0xFF0000, 0x00FF00, 0x0000FF, 0xFF9600, 0x9600FF, 0x0096FF, 0x00FF96];
+	//			  Bianco	Nero	  Rosso		Verde	  Blue		Arancio   Violetto  Azzurro, Acquamarina, Rosa, Turchese,	Giallo	, oro
+    var colors = [0xFFFFFF, 0x000000, 0xFF0000, 0x00FF00, 0x0000FF, 0xFF9600, 0x9600FF, 0x0096FF, 0x00FF96, 0xFF1493, 0x40E0D0, 0xFFFF00, 0xE69200];
     console.log('ext.setRGB ' + color );
 	var idx = menus[lang]['color_list'].indexOf(color);		
 	
@@ -626,14 +625,20 @@
 	var rgb = menus[lang]['RGBs'].indexOf(RGBs)
 	if(rgb == 0){
 		// Soft PWM
-		analogWrite(9, R);
+		analogWrite(9, R);		
 		analogWrite(10, G);
 		analogWrite(11, B);	
-	}
+		hwList.devices[4].val = R;
+		hwList.devices[5].val = G;
+		hwList.devices[6].val = B;	
+		}
     else {
 		analogWrite(3, R);
 		analogWrite(5, G);
-		analogWrite(6, B);			
+		analogWrite(6, B);
+		hwList.devices[7].val = R;
+		hwList.devices[8].val = G;
+		hwList.devices[9].val = B;
 	}
   };
   
@@ -714,7 +719,7 @@
 
     poller = setInterval(function() {
       queryFirmware();
-    }, 1000);
+    }, 3000);
 
     watchdog = setTimeout(function() {
       clearInterval(poller);
@@ -750,9 +755,9 @@
       //[' ', 'Connetti il %m.hwIn ad analog %n', 'connectHW', 'Potenziometro', 0],
       ['-'],
       //[' ', 'Imposta %m.leds a %m.outputs', 'digitalLED', 'LED Rosso 1', 'acceso'],
-      [' ', 'Imposta %m.leds a %n%', 'setLED', 'LED Rosso1', 100],
-      [' ', 'Aumenta %m.leds di %n%', 'changeLED', 'LED Rosso1', 10],	  
-	  [' ', 'Imposta %m.RGBs a %m.color_list', 'setRGB', 'RGB 1', 'Arancio'],
+      [' ', 'Imposta %m.leds a %n%', 'setLED', 'LED Rosso2', 100],
+      [' ', 'Cambia %m.leds di %n% (+-)', 'changeLED', 'LED Rosso2', 10],	  
+	  [' ', 'Imposta %m.RGBs a %m.color_list', 'setRGB', 'RGB 2', 'Arancio'],
 	  
 	  ['-'],
 	  [' ', 'Avvia la musica', 'play'],
@@ -764,7 +769,7 @@
 	  
       ['-'],
       [' ', 'Ruota %m.servos fino a %n gradi', 'rotateServo', 'Motore1', 90],
-      [' ', 'Ruota %m.servos di %n gradi', 'changeServo', 'Motore1', 20],
+      [' ', 'Ruota %m.servos di %n gradi', 'changeServo', 'Motore2', 20],
       ['-'],
       ['h', 'Quando %m.buttons è %m.btnStates', 'whenButton', 'Pulsante A', 'Premuto'],
       ['b', '%m.buttons premuto?', 'isButtonPressed', 'Pulsante A'],
@@ -802,7 +807,7 @@
       ops: ['>', '=', '<'],
       servos: ['Motore1', 'Motore2'],
 	  RGBs: ['RGB 1', 'RGB 2'],
-	  color_list: ['Bianco', 'Nero', 'Rosso', 'Verde', 'Blu', 'Arancio', 'Violetto', 'Azzurro', 'Acquamarina']
+	  color_list: ['Bianco', 'Nero', 'Rosso', 'Verde', 'Blu', 'Arancio', 'Violetto', 'Azzurro', 'Acquamarina', 'Rosa', 'Turchese', 'Giallo', 'Oro']
     }
   };
 
