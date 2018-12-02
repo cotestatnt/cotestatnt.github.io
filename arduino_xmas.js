@@ -223,10 +223,6 @@
 	
 	pinMode(hwList.devices[14].pin, INPUT);	
 	
-	rotateServo(12, 5);
-	rotateServo(13, 5);	
-	rotateServo(12, 175);
-	rotateServo(13, 175);	
 	rotateServo(12, 90);
 	rotateServo(13, 90);
 	
