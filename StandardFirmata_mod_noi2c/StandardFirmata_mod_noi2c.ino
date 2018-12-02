@@ -71,10 +71,6 @@ pwmPin myPWMpins[pinCount];
  * GLOBAL VARIABLES
  *============================================================================*/
 
-#ifdef FIRMATA_SERIAL_FEATURE
-SerialFirmata serialFeature;
-#endif
-
 /* analog inputs */
 int analogInputsToReport = 0; // bitwise array to store pin reporting
 
@@ -88,7 +84,7 @@ byte portConfigInputs[TOTAL_PORTS]; // each bit: 1 = pin in INPUT, 0 = anything 
 /* timer variables */
 unsigned long currentMillis;        // store the current value from millis()
 unsigned long previousMillis;       // for comparison with currentMillis
-unsigned int samplingInterval = 19; // how often to run the main loop (in ms)
+unsigned int samplingInterval = 25; // how often to run the main loop (in ms)
 
 Servo servos[MAX_SERVOS];
 byte servoPinMap[TOTAL_PINS];
@@ -249,27 +245,19 @@ void setPinModeCallback(byte pin, int mode)
       }
       break;
 
-
     case PIN_MODE_SOFT_PWM:      
       pinMode(pin, OUTPUT);              
       break;
-
-
+      
     case PIN_MODE_SERVO:
       if (IS_PIN_DIGITAL(pin)) {
         Firmata.setPinMode(pin, PIN_MODE_SERVO);
         if (servoPinMap[pin] == 255 || !servos[servoPinMap[pin]].attached()) {
-          // pass -1 for min and max pulse values to use default values set
-          // by Servo library
-          attachServo(pin, -1, -1);
+          // pass -1 for min and max pulse values to use default values set by Servo library
+          attachServo(pin, 600, 2340);
         }
       }
-      break;    
-    case PIN_MODE_SERIAL:
-#ifdef FIRMATA_SERIAL_FEATURE
-      serialFeature.handlePinMode(pin, PIN_MODE_SERIAL);
-#endif
-      break;
+      break;        
     default:
       Firmata.sendString("Unknown pin mode"); // TODO: put error msgs in EEPROM
   }
@@ -465,9 +453,6 @@ void sysexCallback(byte command, byte argc, byte *argv)
           Firmata.write(PIN_MODE_I2C);
           Firmata.write(1);  // TODO: could assign a number to map to SCL or SDA
         }
-#ifdef FIRMATA_SERIAL_FEATURE
-        serialFeature.handleCapability(pin);
-#endif
         Firmata.write(127);
       }
       Firmata.write(END_SYSEX);
@@ -515,12 +500,6 @@ void systemResetCallback(){
 
   // initialize a defalt state
   // TODO: option to load config from EEPROM instead of default
-
-#ifdef FIRMATA_SERIAL_FEATURE
-  serialFeature.reset();
-#endif
-
-
   for (byte i = 0; i < TOTAL_PORTS; i++) {
     reportPINs[i] = false;    // by default, reporting off
     portConfigInputs[i] = 0;  // until activated
@@ -580,11 +559,11 @@ void loop(){
 
   /* STREAMREAD - processing incoming messagse as soon as possible, while still
    * checking digital inputs.  */
-  while (Firmata.available())
-    Firmata.processInput();
+  while (Firmata.available()){
+    Firmata.processInput();    
+  }
 
   // TODO - ensure that Stream buffer doesn't go over 60 bytes
-
   currentMillis = millis();
   if (currentMillis - previousMillis > samplingInterval) {
     previousMillis += samplingInterval;
@@ -636,9 +615,7 @@ void loop(){
   // Handle software PWM
   handlePWM();
   
-#ifdef FIRMATA_SERIAL_FEATURE
-  serialFeature.update();
-#endif
+
 }
 
 uint16_t get_checksum (uint16_t *thebuf){
