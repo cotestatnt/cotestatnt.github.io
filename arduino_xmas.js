@@ -756,7 +756,6 @@
       [' ', 'Aumenta %m.leds di %n%', 'changeLED', 'LED Rosso1', 10],	  
 	  [' ', 'Imposta %m.RGBs a %m.color_list', 'setRGB', 'RGB 1', 'Arancio'],
 	  
-	  
 	  ['-'],
 	  [' ', 'Avvia la musica', 'play'],
 	  [' ', 'Ferma la musica', 'pause'],
@@ -765,7 +764,6 @@
 	  [' ', 'Suona canzone %n', 'playSong', 1],
 	  [' ', 'Imposta volume a %n', 'volume', 80],
 	  
-	    
       ['-'],
       [' ', 'Ruota %m.servos fino a %n gradi', 'rotateServo', 'Motore1', 90],
       [' ', 'Ruota %m.servos di %n gradi', 'changeServo', 'Motore1', 20],
