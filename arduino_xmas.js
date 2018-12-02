@@ -221,7 +221,7 @@
 	pinMode(hwList.devices[12].pin, SERVO);
 	pinMode(hwList.devices[13].pin, SERVO);
 	
-	pinMode(hwList.devices[14].pin, PULLUP);	
+	pinMode(hwList.devices[14].pin, INPUT);	
 	
 	//rotateServo(7, 90);
 	//rotateServo(8, 90);
@@ -490,8 +490,9 @@
   };    
   
   ext.volume = function(volume){
-	console.log('Set volume ' + volume);  
-    var msg = new Uint8Array([START_SYSEX, SERIAL_MESSAGE, VOLUME, volume, END_SYSEX]);   
+	var DSPVolume = mapValues(volume, 0, 100, 0, 32);
+	console.log('Set volume ' + DSPVolume);  
+    var msg = new Uint8Array([START_SYSEX, SERIAL_MESSAGE, VOLUME, DSPVolume, END_SYSEX]);   
 	device.send(msg.buffer);
 	console.log(msg);	  
   };  
@@ -762,7 +763,7 @@
 	  [' ', 'Prossimo', 'next'],
 	  [' ', 'Precedente', 'prev'],
 	  [' ', 'Suona canzone %n', 'playSong', 1],
-	  [' ', 'Imposta volume a %n', 'volume', 25],
+	  [' ', 'Imposta volume a %n', 'volume', 80],
 	  
 	    
       ['-'],
@@ -771,7 +772,7 @@
       ['-'],
       ['h', 'Quando %m.buttons è %m.btnStates', 'whenButton', 'Pulsante A', 'Premuto'],
       ['b', '%m.buttons premuto?', 'isButtonPressed', 'Pulsante A'],
-      ['b', '%m.digitalIn attivo?', 'isPirActive', 'Sensore presenza'],
+      ['b', '%m.digitalIn Occupato?', 'isPirActive', 'Sensore presenza'],
       ['-'],
       ['h', 'Quando %m.hwIn %m.ops %n%', 'whenInput', 'Potenziometro', '>', 50],
       ['r', 'Leggi %m.hwIn', 'readInput', 'Potenziometro'],
@@ -797,7 +798,7 @@
       buttons: ['Pulsante A', 'Pulsante B', 'Pulsante C', 'Pulsante D' ],
       btnStates: ['Premuto', 'Rilasciato'],
 	  digitalIn: [ 'Sensore presenza'],
-	  digitalStates: [ 'Attivo', 'Disattivo'],
+	  digitalStates: [ 'Occupato', 'Libero'],
       hwIn: ['Potenziometro', 'Sensore di luce'],
       hwOut: ['LED Rosso1', 'LED Verde1', 'LED Blu1', 'LED Rosso2', 'LED Verde2', 'LED Blu2', 'Motore1', 'Motore2'],
       leds: ['LED Rosso1', 'LED Verde1', 'LED Blu1', 'LED Rosso2', 'LED Verde2', 'LED Blu2'],
