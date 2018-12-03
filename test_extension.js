@@ -6,7 +6,7 @@ class ArduinoConnect {
   getInfo() {
     return {
       id: 'utilities',
-      name: 'Arduino Uno',
+      name: 'Arduino',
 
       colour: '#8BC34A',
       colourSecondary: '#7CB342',
