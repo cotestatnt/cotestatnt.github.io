@@ -1,1 +1,81 @@
-<!DOCTYPE html><html lang=""><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="/favicon.ico"><title>demo-gui</title><link href="/css/app.93c3c93c.css" rel="preload" as="style"><link href="/js/app.b0803fdd.js" rel="preload" as="script"><link href="/js/chunk-vendors.b5845790.js" rel="preload" as="script"><link href="/css/app.93c3c93c.css" rel="stylesheet"></head><body><noscript><strong>We're sorry but demo-gui doesn't work properly without JavaScript enabled. Please enable it to continue.</strong></noscript><div id="app"></div><script src="/js/chunk-vendors.b5845790.js"></script><script src="/js/app.b0803fdd.js"></script></body></html>
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Firebase ESP Auth Demo</title>
+    <link rel="manifest" href="manifest.json">
+
+	<link type="text/css" rel="stylesheet" href="css/style.css" />
+    <link type="text/css" rel="stylesheet" href="css/firebaseui.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  </head>
+  <body>
+	<!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
+	<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+
+	<!-- If you enabled Analytics in your project, add the Firebase SDK for Analytics -->
+	<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-analytics.js"></script>
+
+	<!-- Add Firebase products that you want to use -->
+	<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+	<!-- https://github.com/firebase/firebaseui-web -->
+	<script src="js/firebaseui.js"></script>
+
+	<!-- User application script -->
+	<script src="js/config.js"></script>
+	<script src="js/common.js"></script>
+
+    <div id="container">
+      <div id="loading">Loading...</div>
+      <div id="loaded" class="hidden">
+        <div id="main">
+          <div id="user-signed-in" class="hidden">
+            <div id="user-info">
+
+              <span id="name"></span>
+              <span id="email"></span>
+              <button id="sign-out" class="button is-danger is-outlined">
+                <span>Sign Out</span>
+                <span class="icon is-small"><i class="fas fa-times"></i></span>
+              </button>
+
+              <button id="delete-account" class="hidden">Delete account</button>
+            </div>
+          </div>
+
+          <div id="user-signed-out" class="hidden">
+            <h4>You are signed out.</h4>
+            <div id="firebaseui-spa">
+              <div id="firebaseui-container"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    <img src="img/espressif-systems.svg" alt="Espressif logo" width="100">
+
+
+
+    <h3 class="box">GPIO status list</h3>
+    <div class="box">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Pin Name</th>
+            <th>Pin number</th>
+            <th>Type</th>
+            <th>Level</th>
+          </tr>
+        </thead>
+        <tbody id='gpio-list'>
+
+        </tbody>
+      </table>
+    </div>
+
+    </div>
+    <script src="js/app.js"></script>
+  </body>
+</html>

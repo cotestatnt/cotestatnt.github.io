@@ -1,0 +1,13 @@
+{
+  "name": "Firebase ESP Demo",
+  "short_name": "FirebaseESP",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fff",
+  "lang": "en-US",
+  "description": "Firebase ESP Demo application.",
+  "prefer_related_applications": false,
+  "theme_color": "#fff",
+  "scope": "/",
+  "orientation": "portrait-primary"
+}
