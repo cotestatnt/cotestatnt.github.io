@@ -2,16 +2,12 @@
 #include <WiFi.h>
 #elif defined(ESP8266)
 #include <ESP8266WiFi.h>
-#include "webpage.h"
 
 #endif
 #include <Firebase_ESP_Client.h>
 #include "addons/TokenHelper.h"
 #include "addons/RTDBHelper.h"
 
-// HTTP server
-#include <ESP8266WebServer.h>
-ESP8266WebServer server(80);
 
 struct SetPin {
   bool en = false;
@@ -32,36 +28,21 @@ const char outLabels[][10] = {"D3-OUT", "D4-OUT"};
 const bool outInvert[] = {false, true};
 
 /* 1. Define the WiFi credentials */
-#define WIFI_SSID "xxxxxxxxx"
-#define WIFI_PASSWORD "xxxxxxxxxxxxx"
+#define WIFI_SSID "xxxxxxxxxxxxxx"
+#define WIFI_PASSWORD "xxxxxxxxxxxxxxxx"
 
 /* 2. Define the API Key */
-#define API_KEY "xxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+#define API_KEY "xxxxxxxxxxxxxxxxxxxxxxxxxxx"
 /* 3. Define the RTDB URL */
-#define DATABASE_URL "https://esp-stream-test-default-rtdb.europe-west1.firebasedatabase.app/"
+#define DATABASE_URL "https://esp-stream-test-xxxxxxxx-rtdb.xxxxxxx-west1.firebasedatabase.app/"
 /* 4. Define the user Email and password that alreadey registerd or added in your project */
-#define USER_EMAIL "tolentino.cotesta@gmail.com"
-#define USER_PASSWORD "xxxxxxxxxxxxxxxxx"
+#define USER_EMAIL "xxxxxxxxxxxx.xxxxxxxxxxx@email.com"
+#define USER_PASSWORD "xxxxxxxxxxxxxxxxxxx"
 
-// Define FirebaseESP8266 data object
-FirebaseData fbdo1;
-
-FirebaseAuth auth;
-FirebaseConfig config;
+FirebaseData fbdo1;     // Firebase data object
+FirebaseAuth auth;      // Firebase authentication object
+FirebaseConfig config;  // Firebase configuration object
 const char* path = "/esp-stream";
-
-// Web server handlers
-void handleNotFound() {
-    String msg = server.uri();
-    msg += " not found.";
-    server.send(404, "text/plain", msg);    
-}
-
-// Send homepage (loaded from flash memory) to client
-void handleHomePage() {
-  server.sendHeader(F("Content-Encoding"), "gzip");
-  server.send(200, "text/html", WEBPAGE_HTML, WEBPAGE_HTML_SIZE);
-}
 
 void updateGpioList() {
     String jsonStr;
@@ -69,7 +50,7 @@ void updateGpioList() {
     size_t pos = 0;
     for (uint8_t i=0; i < sizeof(inputs); i++) {
         FirebaseJson gpio;
-        gpio.add("pin", String(inputs[i]));
+        gpio.add("pin", inputs[i]);
         gpio.add("label", String(inLabels[i]));
         gpio.add("type", "input");
         gpio.add("level", digitalRead(inputs[i]) ? true : false);
@@ -78,7 +59,7 @@ void updateGpioList() {
     }
     for (uint8_t i=0; i < sizeof(outputs); i++) {
         FirebaseJson gpio;
-        gpio.add("pin", String(outputs[i]));
+        gpio.add("pin", outputs[i]);
         gpio.add("label", String(outLabels[i]));
         gpio.add("type", "output");
         gpio.add("invert", outInvert[i]);
@@ -134,15 +115,15 @@ void streamCallback(FirebaseStream data) {
         size_t len = json.iteratorBegin();
         for (size_t i = 0; i < len; i++) {
             // Get all key:value combination for this JSON event
-            json.iteratorGet(i, type, key, value);
+            json.iteratorGet(i, type, key, value);  
 
-            // With string values, we have unwanted " chars.
+            // With string values, we have unwanted " chars inserted from library while parsing
             value.replace('\"', ' ');
             value.trim();
-            Serial.printf("\"%s\":\"%s\"\n", key.c_str(), value.c_str());  
+            Serial.printf("\"%s\":\"%s\"\n", key.c_str(), value.c_str());              
 
             // If this is a "writeOut" command, set the pin structure ready to be valorized
-            if(key.equals("cmd") && value.indexOf("writeOut") > -1) {
+            if(key.equals("cmd") && value.equals("writeOut")) {
                 setPin.en = true;
                 Serial.println("cmd: writeOut");
             }
@@ -221,19 +202,15 @@ void setup() {
     Serial.println("REASON: " + fbdo1.errorReason());
     Serial.println("------------------------------------\n");
   }
-  
-  Firebase.RTDB.setStreamCallback(&fbdo1, streamCallback, streamTimeoutCallback);
 
-  server.on("/", HTTP_GET, handleHomePage);
-  server.onNotFound(handleNotFound);
-  server.begin();
-  
+  // Set callback for stream data
+  Firebase.RTDB.setStreamCallback(&fbdo1, streamCallback, streamTimeoutCallback);
   updateGpioList();
 }
 
 void loop() {
-  server.handleClient();
-  
+
+  // True on pin state change
   if( updateGpioState()) {
     updateGpioList();
   }
