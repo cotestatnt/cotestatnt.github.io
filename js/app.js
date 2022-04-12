@@ -88,8 +88,9 @@ ui.disableAutoSignIn();
 var handleSignedInUser = function(user) {
   $('user-signed-in').style.display = 'block';
   $('user-signed-out').style.display = 'none';
-  $('name').textContent = user.displayName + ' (';
-  $('email').textContent = user.email + ')';
+  if (user.displayName)
+    $('name').textContent = user.displayName;
+  $('email').textContent = user.email;
 
   // if (user.photoURL) {
   //   var photoURL = user.photoURL;
