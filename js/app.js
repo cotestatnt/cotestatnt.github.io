@@ -24,7 +24,7 @@ const imageOn  = '<td><img src="img/light-on.svg" alt="light on" width="32"></im
 const imageOff = '<td><img src="img/light-off.svg" alt="light off" width="32"></img></td>';
 
 var $ = function(el) {
-	return document.getElementById(el);
+  return document.getElementById(el);
 }
 
 /**
