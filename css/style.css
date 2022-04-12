@@ -33,6 +33,10 @@ body {
   vertical-align: middle;
 }
 
+.table td, .table th {
+  padding: 5px 10px;  
+}
+
 #sign-out{
   height: 22px;
   width: 100px;
