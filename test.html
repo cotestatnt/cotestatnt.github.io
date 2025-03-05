@@ -1,20 +1,109 @@
 <!DOCTYPE html>
-<html>
+<html lang="it">
 <head>
-<title>Titolo: testo che appare sul tab del browser</title>
-<!-- Commento: libreria esterna di icone https://fonts.google.com/icons -->
-<link href="https://raw.githubusercontent.com/marella/material-icons/main/css/material-icons.css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Google + Firebase</title>
 </head>
 <body>
 
-<h1>Temperatura</h1>
-<p>My first paragraph. <span class="material-symbols-outlined"></span></p>
-<span class="material-icons">pie_chart</span>          <!-- Filled -->
-<span class="material-icons-outlined">pie_chart</span> <!-- Outlined -->
-<span class="material-icons-round">pie_chart</span>    <!-- Round -->
-<span class="material-icons-sharp">pie_chart</span>    <!-- Sharp -->
-<span class="material-icons-two-tone">pie_chart</span> <!-- Two Tone -->
+    <h1>Accedi con Google</h1>
+    <button id="loginBtn">Login con Google</button>
+    <button id="logoutBtn" style="display:none;">Logout</button>
+    
+    <h2>Dati dal Realtime Database:</h2>
+    <pre id="dataOutput">Nessun dato caricato...</pre>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { initializeAppCheck, ReCaptchaV3Provider } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app-check.js";
+
+        // 🔹 Configurazione Firebase
+        // const firebaseConfig = {
+        //     apiKey: "TUO_API_KEY",
+        //     authDomain: "TUO_PROGETTO.firebaseapp.com",
+        //     databaseURL: "https://TUO_PROGETTO-default-rtdb.firebaseio.com/",
+        //     projectId: "TUO_PROGETTO",
+        //     storageBucket: "TUO_PROGETTO.appspot.com",
+        //     messagingSenderId: "ID_MESSAGGI",
+        //     appId: "ID_APP"
+        // };
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyABKehBoLgMYw20B4cwo6v8xVvq5zQi53M",
+            authDomain: "esp-stream-test.firebaseapp.com",
+            databaseURL: "https://esp-stream-test-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "esp-stream-test",
+            storageBucket: "esp-stream-test.appspot.com",  
+            appId: "1:238762683803:web:2b310f1bc33d861cb2053e"
+        };
+
+        // 🔹 Inizializza Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth();
+        const database = getDatabase(app);
+
+        // 🔹 Protezione con App Check
+        const appCheck = initializeAppCheck(app, {
+            provider: new ReCaptchaV3Provider("LA_TUA_RECAPTCHA_KEY"),
+            isTokenAutoRefreshEnabled: true
+        });
+
+        // 🔹 Login con Google
+        document.getElementById("loginBtn").addEventListener("click", async () => {
+            const provider = new GoogleAuthProvider();
+            try {
+                const result = await signInWithPopup(auth, provider);
+                console.log("Login riuscito:", result.user);
+                aggiornaUI(result.user);
+                caricaDati();
+            } catch (error) {
+                console.error("Errore di login:", error);
+            }
+        });
+
+        // 🔹 Logout
+        document.getElementById("logoutBtn").addEventListener("click", async () => {
+            await signOut(auth);
+            console.log("Logout effettuato");
+            aggiornaUI(null);
+        });
+
+        // 🔹 Controlla stato login
+        onAuthStateChanged(auth, (user) => {
+            aggiornaUI(user);
+            if (user) caricaDati();
+        });
+
+        // 🔹 Funzione per aggiornare UI
+        function aggiornaUI(user) {
+            document.getElementById("loginBtn").style.display = user ? "none" : "block";
+            document.getElementById("logoutBtn").style.display = user ? "block" : "none";
+            document.getElementById("dataOutput").innerText = user ? "Caricamento dati..." : "Nessun dato caricato...";
+        }
+
+        // 🔹 Carica dati dal Realtime Database
+        async function caricaDati() {
+            const user = auth.currentUser;
+            if (!user) return;
+
+            const dbRef = ref(database, "chiavi"); // Modifica con il percorso nel tuo database
+            try {
+                const snapshot = await get(dbRef);
+                if (snapshot.exists()) {
+                    document.getElementById("dataOutput").innerText = JSON.stringify(snapshot.val(), null, 2);
+                } else {
+                    document.getElementById("dataOutput").innerText = "Nessun dato trovato.";
+                }
+            } catch (error) {
+                console.error("Errore nel recupero dati:", error);
+            }
+        }
+
+    </script>
 
 </body>
 </html>
-
