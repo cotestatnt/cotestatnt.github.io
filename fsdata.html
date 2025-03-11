@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Raw Data fsdata.c Generator</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; max-width: 900px; margin: 0 auto; }
+        textarea { width: 100%; height: 300px; font-family: monospace; }
+        .container { margin: 20px 0; }
+        .info { background-color: #e8f4f8; padding: 10px; border-radius: 5px; text-align: left; margin: 15px 0; }
+        button { background-color: #4CAF50; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; margin: 5px; }
+        button:hover { background-color: #45a049; }
+        input[type="file"] { margin: 10px 0; }
+        .file-info { text-align: left; margin: 10px 0; }
+        .copy-success { color: #4CAF50; margin: 5px; visibility: hidden; }
+        .options { text-align: left; margin: 10px 0; padding: 10px; background-color: #f5f5f5; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <h2>Raw Data fsdata.c Generator</h2>
+    
+    <div class="info">
+        <p>Questo strumento genera un array C con i dati binari di un file.</p>
+        <p>Il file verrà convertito direttamente in un array di byte C senza compressione.</p>
+    </div>
+    
+    <div class="container">
+        <input type="file" id="fileInput">
+        <div class="options">
+            <label><input type="checkbox" id="addFilename"> Includi nome file nei dati</label><br>
+            <label><input type="checkbox" id="addNullTerminator"> Aggiungi terminatore null (0x00) alla fine</label>
+        </div>
+        <div>
+            <button onclick="processFile()">Genera Array C</button>
+        </div>
+    </div>
+
+    <div id="fileInfo" class="file-info"></div>
+    
+    <div class="container">
+        <h3>Codice Generato:</h3>
+        <textarea id="output" readonly></textarea>
+        <div>
+            <button onclick="copyToClipboard()">Copia negli Appunti</button>
+            <span id="copySuccess" class="copy-success">Copiato!</span>
+        </div>
+    </div>
+    
+    <script>
+        document.getElementById('fileInput').addEventListener('change', function(event) {
+            if (event.target.files.length === 0) {
+                return;
+            }
+            
+            const file = event.target.files[0];
+            const fileInfoElement = document.getElementById('fileInfo');
+            fileInfoElement.innerHTML = `File selezionato: ${file.name} (${formatFileSize(file.size)})`;
+        });
+        
+        function formatFileSize(bytes) {
+            if (bytes < 1024) return bytes + " bytes";
+            else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + " KB";
+            else return (bytes / 1048576).toFixed(1) + " MB";
+        }
+        
+        function processFile() {
+            const fileInput = document.getElementById('fileInput');
+            
+            if (fileInput.files.length === 0) {
+                alert("Per favore, seleziona un file.");
+                return;
+            }
+            
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+            const addFilename = document.getElementById('addFilename').checked;
+            const addNullTerminator = document.getElementById('addNullTerminator').checked;
+            
+            reader.onload = function(e) {
+                const fileContent = new Uint8Array(e.target.result);
+                
+                // Prepare final data array
+                let finalData = [];
+                
+                // Add filename if selected
+                if (addFilename) {
+                    const filenameBytes = [...file.name].map(c => c.charCodeAt(0));
+                    finalData = finalData.concat(filenameBytes);
+                    
+                    if (addNullTerminator) {
+                        finalData.push(0); // Add null terminator after filename
+                    }
+                }
+                
+                // Add file content
+                for (let i = 0; i < fileContent.length; i++) {
+                    finalData.push(fileContent[i]);
+                }
+                
+                // Add null terminator at the end if selected
+                if (addNullTerminator && !addFilename) {
+                    finalData.push(0);
+                }
+                
+                // Generate C code
+                const variableName = sanitizeVarName(file.name);
+                let output = `/* File: ${file.name} */
+/* Size: ${fileContent.length} bytes */
+
+static const unsigned char ${variableName}_data[] = {
+`;
+                
+                // Convert to hex format with formatting
+                const contentBytes = Array.from(finalData, byte => `0x${byte.toString(16).padStart(2, '0')}`);
+                output += formatHexArray(contentBytes);
+                output += `
+};
+
+#define ${variableName.toUpperCase()}_SIZE ${finalData.length}
+`;
+                
+                document.getElementById("output").value = output;
+                updateFileInfo(file.name, fileContent.length, finalData.length);
+            };
+            
+            reader.readAsArrayBuffer(file);
+        }
+        
+        function updateFileInfo(filename, originalSize, finalSize) {
+            const fileInfoElement = document.getElementById('fileInfo');
+            fileInfoElement.innerHTML = `
+                <strong>File elaborato:</strong> ${filename}<br>
+                <strong>Dimensione originale:</strong> ${formatFileSize(originalSize)}<br>
+                <strong>Dimensione finale dell'array:</strong> ${formatFileSize(finalSize)}<br>
+            `;
+        }
+        
+        function sanitizeVarName(filename) {
+            // Get base name without extension
+            const baseName = filename.split('.')[0];
+            // Replace non-alphanumeric characters with underscores
+            return baseName.replace(/[^a-zA-Z0-9]/g, "_");
+        }
+        
+        function formatHexArray(hexArray) {
+            let result = "";
+            for (let i = 0; i < hexArray.length; i++) {
+                if (i % 12 === 0) {
+                    result += "    ";
+                }
+                result += hexArray[i];
+                if (i < hexArray.length - 1) {
+                    result += ", ";
+                    if ((i + 1) % 12 === 0) {
+                        result += "\n";
+                    }
+                }
+            }
+            return result;
+        }
+        
+        function copyToClipboard() {
+            const textarea = document.getElementById("output");
+            if (!textarea.value.trim()) {
+                alert("Nessun contenuto da copiare. Genera prima l'array C.");
+                return;
+            }
+            
+            // Modern clipboard API
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(textarea.value)
+                    .then(() => showCopySuccess())
+                    .catch(err => {
+                        console.error('Errore nel copiare: ', err);
+                        fallbackCopyToClipboard(textarea);
+                    });
+            } else {
+                fallbackCopyToClipboard(textarea);
+            }
+        }
+        
+        function fallbackCopyToClipboard(textarea) {
+            textarea.select();
+            try {
+                const successful = document.execCommand('copy');
+                if (successful) {
+                    showCopySuccess();
+                } else {
+                    alert("Impossibile copiare. Prova a selezionare manualmente il testo e copiarlo.");
+                }
+            } catch (err) {
+                console.error('Fallback: errore nel copiare', err);
+                alert("Impossibile copiare. Prova a selezionare manualmente il testo e copiarlo.");
+            }
+        }
+        
+        function showCopySuccess() {
+            const copySuccess = document.getElementById('copySuccess');
+            copySuccess.style.visibility = 'visible';
+            setTimeout(() => {
+                copySuccess.style.visibility = 'hidden';
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
