@@ -103,7 +103,8 @@
                 
                 // Generate C code
                 const variableName = sanitizeVarName(file.name);
-                let output = `/* File: ${file.name} */
+                let output = `/* Generated with https://cotestatnt.github.io/fsdata.html */
+/* File: ${file.name} */
 /* Content-Type: ${contentType} */
 /* Original Size: ${originalSize} bytes */
 /* Compressed Size: ${fileContent.length} bytes */
