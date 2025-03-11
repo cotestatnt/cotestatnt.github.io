@@ -110,6 +110,8 @@
 /* Compression Ratio: ${(fileContent.length / originalSize * 100).toFixed(1)}% */
 ${applyCompression ? '/* Compression: GZIP (ricordati di aggiungere "Content-Encoding: gzip" negli header HTTP) */' : '/* Nessuna compressione applicata */'}
 
+#define ${variableName.toUpperCase()}_SIZE ${finalData.length}
+
 static const unsigned char ${variableName}[] = {
 `;
                 
@@ -119,7 +121,7 @@ static const unsigned char ${variableName}[] = {
                 output += `
 };
 
-#define ${variableName.toUpperCase()}_SIZE ${finalData.length}
+
 `;
                 
                 document.getElementById("output").value = output;
