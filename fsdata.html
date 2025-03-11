@@ -112,7 +112,7 @@ ${applyCompression ? '/* Compression: GZIP (ricordati di aggiungere "Content-Enc
 
 #define ${variableName.toUpperCase()}_SIZE ${finalData.length}
 
-static const unsigned char ${variableName}[] = {
+static const unsigned char ${variableName}[] PROGMEM = {
 `;
                 
                 // Convert to hex format with formatting
