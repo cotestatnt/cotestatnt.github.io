@@ -1,6 +1,6 @@
 const DATA_URL = "./data/bookings.json";
 const FIREBASE_DB_PATH = "ev-booking";
-const DAYS = ["Lunedi", "Martedi", "Mercoledi", "Giovedi", "Venerdi", "Sabato"];
+const DAYS = ["Lunedi", "Martedi", "Mercoledi", "Giovedi", "Venerdi"];
 const firebaseRootRef = window.evBookingDatabase ? window.evBookingDatabase.ref(FIREBASE_DB_PATH) : null;
 
 const state = {
