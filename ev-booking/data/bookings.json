@@ -1,0 +1,65 @@
+{
+  "version": 1,
+  "updatedAt": "2026-04-08T08:00:00.000Z",
+  "defaultWeek": "2026-W15",
+  "settings": {
+    "slotMinutes": 30,
+    "startHour": 7,
+    "endHour": 18.5
+  },
+  "stations": [
+    {
+      "id": "t2-1",
+      "name": "T2-1",
+      "connector": "Presa T2",
+      "color": "#1f7a8c"
+    },
+    {
+      "id": "t2-2",
+      "name": "T2-2",
+      "connector": "Presa T2",
+      "color": "#bf6c3b"
+    },
+    {
+      "id": "t2-3",
+      "name": "T2-3",
+      "connector": "Presa T2",
+      "color": "#4c956c"
+    },
+    {
+      "id": "3a-1",
+      "name": "3A-1",
+      "connector": "Presa 3A",
+      "color": "#7a5c99"
+    }
+  ],
+  "bookings": [
+    {
+      "id": "demo-1",
+      "stationId": "t2-1",
+      "date": "2026-04-06",
+      "startTime": "08:30",
+      "endTime": "10:30",
+      "userName": "Mario Rossi",
+      "notes": "Ricarica pre-riunione"
+    },
+    {
+      "id": "demo-2",
+      "stationId": "t2-2",
+      "date": "2026-04-08",
+      "startTime": "14:00",
+      "endTime": "16:00",
+      "userName": "Laura Bianchi",
+      "notes": "Libera la piazzola entro le 16:00"
+    },
+    {
+      "id": "demo-3",
+      "stationId": "3a-1",
+      "date": "2026-04-10",
+      "startTime": "09:00",
+      "endTime": "11:00",
+      "userName": "Paolo Verdi",
+      "notes": "Usa adattatore aziendale"
+    }
+  ]
+}

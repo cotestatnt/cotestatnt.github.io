@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="it">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prenotazione ricarica EV</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="hero panel">
+        <p class="eyebrow">Piazzole EV</p>
+        <h1>Prenotazioni settimanali CGC</h1>
+        <p class="hero-copy">
+          Seleziona la piazzola dalla dropdown,<br>tocca uno slot libero e inserisci il nome.
+        </p>
+      </header>
+
+      <main class="page-stack">
+        <section class="panel control-panel">
+          <div class="control-row">
+            <div class="control-block">
+              <label class="input-label" for="week-picker">Settimana</label>
+              <input id="week-picker" type="week" aria-label="Seleziona la settimana">
+            </div>
+
+            <div class="control-block control-block--counter">
+              <span class="input-label">Prenotazioni</span>
+              <article class="booking-counter">
+                <p id="booking-count" class="status-value">0</p>
+              </article>
+            </div>
+          </div>
+
+          <p id="week-range" class="week-range"></p>
+
+        </section>
+
+        <section class="panel station-panel">
+          <div class="section-head">
+            <div>
+              <p class="section-label">Piazzole</p>
+              <h2>Scegli piazzola</h2>
+            </div>
+            <select id="station-select" class="station-select" name="stationId" aria-label="Seleziona la piazzola"></select>
+          </div>
+
+          <div id="station-legend" class="station-legend"></div>
+          <p id="feedback" class="feedback" role="status" aria-live="polite"></p>
+        </section>
+
+        <section class="panel overview-panel">
+          <div class="section-head">
+            <div>
+              <p class="section-label">Vista globale</p>
+              <h2>Settimana completa</h2>
+            </div>            
+          </div>
+
+          <div class="overview-shell">
+            <div id="overview-grid" class="overview-grid"></div>
+          </div>
+        </section>
+
+        <section class="panel calendar-panel">
+          <div class="section-head section-head--stack">
+            <div>
+              <p class="section-label">Calendario</p>
+              <h2 id="selected-station-name">Piazzola</h2>
+              <p id="selected-station-meta" class="selected-station-meta"></p>
+            </div>
+            <p class="section-copy">Tocca uno slot libero per aprire la prenotazione.</p>
+          </div>
+
+          <div class="calendar-shell">
+            <div id="calendar-grid" class="calendar-grid"></div>
+          </div>
+        </section>
+
+        <section class="panel bookings-panel">
+          <div class="section-head">
+            <div>
+              <p class="section-label">Prenotazioni</p>
+              <h2>Lista piazzola selezionata</h2>
+            </div>
+            <p id="selected-bookings-count" class="section-copy"></p>
+          </div>
+
+          <div id="selected-bookings-list" class="selected-bookings-list"></div>
+        </section>
+      </main>
+    </div>
+
+    <div id="booking-modal" class="booking-modal hidden" aria-hidden="true">
+      <div class="booking-modal-backdrop" data-close-modal="true"></div>
+      <section class="booking-sheet" role="dialog" aria-modal="true" aria-labelledby="booking-modal-title">
+        <div class="sheet-handle"></div>
+        <div class="sheet-head">
+          <div>
+            <p class="section-label">Nuova prenotazione</p>
+            <h2 id="booking-modal-title">Occupa slot</h2>
+            <p id="booking-modal-context" class="sheet-copy"></p>
+          </div>
+          <button id="close-modal" class="ghost-icon" type="button" aria-label="Chiudi">Chiudi</button>
+        </div>
+
+        <form id="booking-modal-form" class="sheet-form">
+          <label>
+            Nome
+            <input id="modal-user-name" name="userName" type="text" maxlength="80" placeholder="Nome e cognome" required>
+          </label>
+
+          <label>
+            Fine prenotazione
+            <select id="modal-end-time" name="endTime" required></select>
+          </label>
+
+          <label>
+            Note
+            <textarea id="modal-notes" name="notes" rows="3" maxlength="220" placeholder="Note opzionali"></textarea>
+          </label>
+
+          <div class="sheet-actions">
+            <button type="submit" class="primary-action">Conferma</button>
+            <button id="cancel-modal" type="button" class="secondary-action">Annulla</button>
+          </div>
+        </form>
+      </section>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
