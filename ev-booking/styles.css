@@ -112,7 +112,6 @@ textarea {
 }
 
 .control-panel,
-.station-panel,
 .overview-panel,
 .calendar-panel,
 .bookings-panel {
@@ -252,18 +251,6 @@ textarea {
 
 .section-head--stack {
   gap: 10px;
-}
-
-.station-select {
-  min-height: 44px;
-}
-
-.station-legend {
-  display: none;
-  gap: 10px;
-  overflow-x: auto;
-  padding-bottom: 2px;
-  scroll-snap-type: x proximity;
 }
 
 .station-pill {
@@ -619,10 +606,6 @@ textarea {
   :root {
     --slot-height: 28px;
     --day-column-min-width: 112px;
-  }
-
-  .station-legend {
-    display: flex;
   }
 
   .panel {

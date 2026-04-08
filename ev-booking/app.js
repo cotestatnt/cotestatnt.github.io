@@ -12,10 +12,8 @@ const state = {
 const elements = {
   weekPicker: document.querySelector("#week-picker"),
   weekRange: document.querySelector("#week-range"),
-  stationSelect: document.querySelector("#station-select"),
   feedback: document.querySelector("#feedback"),
   bookingCount: document.querySelector("#booking-count"),
-  stationLegend: document.querySelector("#station-legend"),
   overviewGrid: document.querySelector("#overview-grid"),
   selectedStationName: document.querySelector("#selected-station-name"),
   selectedStationMeta: document.querySelector("#selected-station-meta"),
@@ -43,9 +41,8 @@ async function init() {
     state.activeWeekStart = getWeekStartFromIso(state.data.defaultWeek || getCurrentWeekValue());
     state.selectedStationId = state.data.stations[0]?.id || null;
     syncLayoutSettings();
-    populateStationSelect();
     render();
-    setFeedback("Seleziona una piazzola e tocca uno slot libero per inserire la prenotazione.");
+    setFeedback("Tocca una piazzola nella vista settimanale e poi scegli uno slot libero.");
   } catch (error) {
     console.error(error);
     setFeedback("Impossibile caricare il file JSON iniziale.", true);
@@ -54,8 +51,6 @@ async function init() {
 
 function bindEvents() {
   elements.weekPicker.addEventListener("change", handleWeekChange);
-  elements.stationSelect.addEventListener("change", handleStationSelectChange);
-  elements.stationLegend.addEventListener("click", handleStationLegendClick);
   elements.overviewGrid.addEventListener("click", handleOverviewClick);
   elements.calendarGrid.addEventListener("click", handleCalendarClick);
   elements.selectedBookingsList.addEventListener("click", handleDeleteClick);
@@ -113,27 +108,9 @@ function normalizeData(rawData) {
   };
 }
 
-function populateStationSelect() {
-  elements.stationSelect.innerHTML = state.data.stations
-    .map((station) => `<option value="${station.id}">${station.name}</option>`)
-    .join("");
-  elements.stationSelect.value = state.selectedStationId;
-}
-
 function handleWeekChange(event) {
   state.activeWeekStart = getWeekStartFromIso(event.target.value);
   render();
-}
-
-function handleStationSelectChange(event) {
-  setSelectedStation(event.target.value);
-}
-
-function handleStationLegendClick(event) {
-  const trigger = event.target.closest("[data-station-id]");
-  if (trigger) {
-    setSelectedStation(trigger.dataset.stationId);
-  }
 }
 
 function handleOverviewClick(event) {
@@ -305,10 +282,8 @@ function deleteBooking(bookingId) {
 function render() {
   renderWeekRange();
   renderSummary();
-  renderStationLegend();
   renderOverview();
   renderSelectedStation();
-  elements.stationSelect.value = state.selectedStationId;
 }
 
 function renderWeekRange() {
@@ -320,19 +295,6 @@ function renderWeekRange() {
 function renderSummary() {
   const weekBookings = getBookingsForActiveWeek();
   elements.bookingCount.textContent = String(weekBookings.length);
-}
-
-function renderStationLegend() {
-  elements.stationLegend.innerHTML = state.data.stations
-    .map((station) => {
-      const activeClass = station.id === state.selectedStationId ? " is-active" : "";
-      return `
-        <button type="button" class="station-pill${activeClass}" data-station-id="${station.id}" style="--station-color:${station.color};">
-          <strong><span class="station-color-dot"></span>${station.name}</strong>
-        </button>
-      `;
-    })
-    .join("");
 }
 
 function renderOverview() {
@@ -539,7 +501,6 @@ function setFeedback(message, isError = false) {
 
 function setSelectedStation(stationId) {
   state.selectedStationId = stationId;
-  elements.stationSelect.value = stationId;
   render();
 }
 
