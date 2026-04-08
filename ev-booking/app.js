@@ -1,9 +1,11 @@
-const STORAGE_KEY = "ev-booking-state-v5";
 const DATA_URL = "./data/bookings.json";
+const FIREBASE_DB_PATH = "ev-booking";
 const DAYS = ["Lunedi", "Martedi", "Mercoledi", "Giovedi", "Venerdi", "Sabato"];
+const firebaseRootRef = window.evBookingDatabase ? window.evBookingDatabase.ref(FIREBASE_DB_PATH) : null;
 
 const state = {
   data: null,
+  seedData: null,
   activeWeekStart: null,
   selectedStationId: null,
   pendingBooking: null,
@@ -36,16 +38,17 @@ async function init() {
   bindEvents();
 
   try {
-    const initialData = await loadInitialData();
-    state.data = normalizeData(initialData);
+    state.seedData = normalizeData(await fetchSeedData());
+    state.data = await loadInitialData(state.seedData);
     state.activeWeekStart = getWeekStartFromIso(state.data.defaultWeek || getCurrentWeekValue());
     state.selectedStationId = state.data.stations[0]?.id || null;
     syncLayoutSettings();
+    subscribeToRealtimeUpdates();
     render();
     setFeedback("Tocca una piazzola nella vista settimanale e poi scegli uno slot libero.");
   } catch (error) {
     console.error(error);
-    setFeedback("Impossibile caricare il file JSON iniziale.", true);
+    setFeedback("Impossibile inizializzare le prenotazioni condivise.", true);
   }
 }
 
@@ -61,18 +64,28 @@ function bindEvents() {
   document.addEventListener("keydown", handleKeydown);
 }
 
-async function loadInitialData() {
-  const localData = window.localStorage.getItem(STORAGE_KEY);
-  if (localData) {
-    return JSON.parse(localData);
-  }
-
+async function fetchSeedData() {
   const response = await fetch(DATA_URL, { cache: "no-store" });
   if (!response.ok) {
     throw new Error(`Errore caricamento JSON: ${response.status}`);
   }
 
   return response.json();
+}
+
+async function loadInitialData(seedData) {
+  if (!firebaseRootRef) {
+    throw new Error("Firebase Realtime Database non disponibile.");
+  }
+
+  const snapshot = await firebaseRootRef.once("value");
+  if (snapshot.exists()) {
+    return normalizeData(snapshot.val());
+  }
+
+  const initialData = serializeData(seedData);
+  await firebaseRootRef.set(initialData);
+  return normalizeData(initialData);
 }
 
 function normalizeData(rawData) {
@@ -106,6 +119,58 @@ function normalizeData(rawData) {
         }))
       : [],
   };
+}
+
+function serializeData(data) {
+  return {
+    version: data.version || 1,
+    updatedAt: new Date().toISOString(),
+    defaultWeek: data.defaultWeek || getCurrentWeekValue(),
+    settings: {
+      slotMinutes: Number(data.settings?.slotMinutes) || 30,
+      startHour: Number(data.settings?.startHour) || 7,
+      endHour: Number(data.settings?.endHour) || 18.5,
+    },
+    stations: Array.isArray(data.stations)
+      ? data.stations.map((station) => ({
+          id: station.id,
+          name: sanitizeStationName(station.name || station.id || ""),
+          connector: station.connector || "",
+          color: station.color || "",
+        }))
+      : [],
+    bookings: Array.isArray(data.bookings)
+      ? data.bookings.map((booking) => ({
+          id: booking.id || crypto.randomUUID(),
+          stationId: booking.stationId,
+          date: booking.date,
+          startTime: booking.startTime,
+          endTime: booking.endTime,
+          userName: booking.userName,
+          notes: booking.notes || "",
+        }))
+      : [],
+  };
+}
+
+function subscribeToRealtimeUpdates() {
+  firebaseRootRef.on(
+    "value",
+    (snapshot) => {
+      const nextData = snapshot.exists() ? normalizeData(snapshot.val()) : normalizeData(state.seedData);
+      state.data = nextData;
+
+      if (!nextData.stations.some((station) => station.id === state.selectedStationId)) {
+        state.selectedStationId = nextData.stations[0]?.id || null;
+      }
+
+      render();
+    },
+    (error) => {
+      console.error(error);
+      setFeedback("Connessione Firebase non disponibile.", true);
+    }
+  );
 }
 
 function handleWeekChange(event) {
@@ -206,7 +271,7 @@ function closeBookingModal() {
   document.body.classList.remove("is-modal-open");
 }
 
-function handleModalSubmit(event) {
+async function handleModalSubmit(event) {
   event.preventDefault();
 
   if (!state.pendingBooking) {
@@ -233,14 +298,17 @@ function handleModalSubmit(event) {
     return;
   }
 
-  state.data.bookings.push(booking);
-  persistData();
-  closeBookingModal();
-  render();
-  setFeedback("Prenotazione registrata correttamente.");
+  try {
+    await createBooking(booking);
+    closeBookingModal();
+    setFeedback("Prenotazione registrata correttamente.");
+  } catch (error) {
+    console.error(error);
+    setFeedback(error.message || "Impossibile registrare la prenotazione.", true);
+  }
 }
 
-function validateBooking(booking) {
+function validateBooking(booking, existingBookings = state.data?.bookings || []) {
   if (!booking.userName) {
     return "Il nome e obbligatorio.";
   }
@@ -253,7 +321,7 @@ function validateBooking(booking) {
     return "L'orario di fine deve essere successivo all'orario di inizio.";
   }
 
-  const overlap = state.data.bookings.find((existing) => {
+  const overlap = existingBookings.find((existing) => {
     if (existing.stationId !== booking.stationId || existing.date !== booking.date) {
       return false;
     }
@@ -268,15 +336,18 @@ function validateBooking(booking) {
   return "";
 }
 
-function deleteBooking(bookingId) {
+async function deleteBooking(bookingId) {
   if (!window.confirm("Confermi la rimozione della prenotazione?")) {
     return;
   }
 
-  state.data.bookings = state.data.bookings.filter((booking) => booking.id !== bookingId);
-  persistData();
-  render();
-  setFeedback("Prenotazione rimossa.");
+  try {
+    await removeBooking(bookingId);
+    setFeedback("Prenotazione rimossa.");
+  } catch (error) {
+    console.error(error);
+    setFeedback(error.message || "Impossibile rimuovere la prenotazione.", true);
+  }
 }
 
 function render() {
@@ -487,16 +558,57 @@ function getBookingsForStationInActiveWeek(stationId) {
   return getBookingsForActiveWeek().filter((booking) => booking.stationId === stationId);
 }
 
-function persistData() {
-  state.data.updatedAt = new Date().toISOString();
-  state.data.defaultWeek = getWeekValueFromDate(state.activeWeekStart);
-  window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state.data, null, 2));
-}
-
-
 function setFeedback(message, isError = false) {
   elements.feedback.textContent = message;
   elements.feedback.classList.toggle("is-error", isError);
+}
+
+async function createBooking(booking) {
+  if (!firebaseRootRef) {
+    throw new Error("Firebase Realtime Database non disponibile.");
+  }
+
+  let transactionError = "";
+
+  const result = await firebaseRootRef.transaction((currentData) => {
+    const nextData = normalizeData(currentData || state.seedData || {});
+    transactionError = validateBooking(booking, nextData.bookings);
+    if (transactionError) {
+      return undefined;
+    }
+
+    nextData.bookings.push(booking);
+    return serializeData(nextData);
+  });
+
+  if (!result.committed) {
+    throw new Error(transactionError || "Prenotazione non salvata.");
+  }
+}
+
+async function removeBooking(bookingId) {
+  if (!firebaseRootRef) {
+    throw new Error("Firebase Realtime Database non disponibile.");
+  }
+
+  let bookingFound = false;
+
+  const result = await firebaseRootRef.transaction((currentData) => {
+    const nextData = normalizeData(currentData || state.seedData || {});
+    const remainingBookings = nextData.bookings.filter((booking) => booking.id !== bookingId);
+    bookingFound = remainingBookings.length !== nextData.bookings.length;
+
+    if (!bookingFound) {
+      return undefined;
+    }
+
+    nextData.bookings = remainingBookings;
+    return serializeData(nextData);
+  });
+
+  if (!result.committed) {
+    throw new Error(bookingFound ? "Rimozione non completata." : "Prenotazione gia rimossa o non trovata.");
+  }
 }
 
 function setSelectedStation(stationId) {
